@@ -1,0 +1,16 @@
+    {
+        "rates":[882,893,963,978,884,862,878,878,812,867],
+        "id":"ololo",
+        "start":"2005-02-25 11:50:11.000"
+    }
+
+
+CREATE ROLE cardio LOGIN ENCRYPTED PASSWORD 'md54261ccd4bc89ceb2fd510ab1414c52bd'
+  CREATEDB CREATEROLE
+   VALID UNTIL 'infinity' CONNECTION LIMIT -1;
+
+
+CREATE DATABASE cardio
+  WITH ENCODING='UTF8'
+       OWNER=cardio
+       CONNECTION LIMIT=-1;

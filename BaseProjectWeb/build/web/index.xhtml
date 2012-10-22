@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+        <script language="javascript" type="text/javascript" src="../js/jquery.js"></script>
+        <script language="javascript" type="text/javascript" src="../js/jquery.flot.js"></script>
+    </h:head>
+    <h:body>
+        Hello from Facelets
+        <div id="placeholder" style="width:1000px;height:300px; background-color: black;"></div>
+
+        <script type="text/javascript">
+            $(function () {
+                // we use an inline data source in the example, usually data would
+                // be fetched from a server
+                var data = [];
+                var totalPoints = 100;
+                var additionalPoints = 5;
+                
+                for (var i = 0; i &lt; totalPoints - additionalPoints; ++i){
+                    data[i] = 0;
+                }
+                
+                function getData(data){
+                    data = data.replace('[',"").replace(']',"");
+                    var myArray = (" " + data + " ").split(", ");
+                    for(var i=0; i &lt; myArray.length; i++) 
+                    {
+                        myArray[i] = +myArray[i];
+                    } 
+                    return myArray;
+                }
+                function preparedData(str){
+                    addData = getData(str);
+                    for (var i=0; i &lt; totalPoints-additionalPoints; ++i){
+                        data[i] = data[i + additionalPoints];
+                    }
+                    for(var i = totalPoints - additionalPoints; i &lt; totalPoints; ++i){
+                        data[i] = addData[ i - totalPoints + additionalPoints];
+                    }
+                    return data;
+                }
+                
+                var options = {
+//                    color: '#92d5ea',
+                    series: { shadowSize: 1, color : '#CC3300'}, // drawing is faster without shadows
+                    yaxis: { min: 0, max: 1, color: '#92d5ea' },
+                    xaxis: { color: '#92d5ea'}
+                };
+                
+                var updateInterval = 200;
+                function update() {
+                    var p = $.get("data",function(d){
+                        var points = preparedData(d);
+                        var res = [];
+                        for (var i = 0; i &lt; points.length; ++i){
+                            res.push([i, points[i]]);
+                        }
+                        var plot = $.plot($("#placeholder"), [ res ], options); 
+                        plot.draw();
+
+                    });
+                    setTimeout(update, updateInterval);
+                    
+                }
+                
+                update();
+            });
+        </script>
+    </h:body>
+</html>
+

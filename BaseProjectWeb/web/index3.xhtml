@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta charset="utf-8"/>
+        <title>Twitter Bootstrap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="../css/bootstrap.css" rel="stylesheet" />
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="../css/Common.css" rel="stylesheet" />
+        <script src="../js/jquery.min.js"></script>
+        <script src="../js/bootstrap.js"></script>
+        <script src="../js/jquery.flot.js"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                // we use an inline data source in the example, usually data would
+                // be fetched from a server
+                var data = [];
+                var totalPoints = 100;
+                var additionalPoints = 5;
+                
+                function getMax(dat){
+                    var a = -1;
+                    for (var i =0; i &lt; totalPoints; ++i){
+                        if (a &lt; dat[i]) a = dat[i];
+                    }
+                    return a;
+                }
+                
+                function getMin(dat){
+                    var a = 10;
+                    for (var i =0; i &lt; totalPoints; ++i){
+                        if (a &gt; dat[i]) a = dat[i];
+                    }
+                    return a;
+                }
+                
+                function getX(dat){
+                    return (getMax(dat) - getMin(dat));
+                }
+                
+                function getAverage(dat){
+                    var a = 0.0;
+                    for (var i = 0; i &lt; dat.length; ++i){
+                        a+=dat[i]; 
+                    }
+                    return a*1.0/totalPoints;
+                }
+                
+                for (var i = 0; i &lt; totalPoints; ++i){
+                    data[i] = 0;
+                }
+                
+                function getData(data){
+                    data = data.replace('[',"").replace(']',"");
+                    var myArray = (" " + data + " ").split(", ");
+                    for(var i=0; i &lt; myArray.length; i++) 
+                    {
+                        myArray[i] = +myArray[i];
+                    } 
+                    return myArray;
+                }
+                function preparedData(str){
+                    addData = getData(str);
+                    for (var i=0; i &lt; totalPoints-additionalPoints; ++i){
+                        data[i] = data[i + additionalPoints];
+                    }
+                    for(var i = totalPoints - additionalPoints; i &lt; totalPoints; ++i){
+                        data[i] = addData[ i - totalPoints + additionalPoints];
+                    }
+                    return data;
+                }
+                
+                var options = {
+                    series: { shadowSize: 0, color : '#CC3300'},
+                    yaxis: { color: '#92d5ea' },
+                    xaxis: { mode: "time", color: '#92d5ea'}
+                };
+                
+                var updateInterval = 1000;
+                function update() {
+                    var p = $.get("test",function(d){
+                        a = eval(d);
+                        //                          alert(d);
+                        //                        var points = preparedData(d);
+                        //                        var t = getAverage(points);
+                        //                        var x = getX(points);
+                        //                        //                        alert(x);
+                        //                        $("#state").html(t);
+                        //                        $("#average").css("width",t*100+"%");
+                        //                        $("#xid").css("width",x*100 + "%");
+                        //                        var res = [];
+                        //                        for (var i = 0; i &lt; points.length; ++i){
+                        //                            res.push([i, points[i]]);
+                        //                        }
+                     var plot = $.plot($("#placeholder"),[a], options); 
+                        //                        plot.draw();
+
+                    });
+                                      setTimeout(update, updateInterval);
+                }
+                update();
+            });
+        </script>
+    </h:head>
+    <h:body>
+        <div class="container">
+            <section id="top-bar">
+                <div class="navbar navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav">
+                                <li>
+                                    <a href="index.html">
+                                        Dashboard <span class="label label-important">7</span>
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="http://wbpreview.com/previews/WB0391302/messages.html">
+                                        Messages <span class="label label-important">+3</span>
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="http://wbpreview.com/previews/WB0391302/orders.html">
+                                        Orders <span class="label label-important">+21</span>
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="http://wbpreview.com/previews/WB0391302/faq.html">
+                                        FAQ
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="http://wbpreview.com/previews/WB0391302/components.html">
+                                        Components
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                            </ul>
+                            <form class="navbar-search pull-left">
+                                <input type="text" class="search-query" placeholder="Search" />
+                            </form>
+                            <ul class="nav pull-right">
+                                <li>
+                                    <a href="http://wbpreview.com/previews/WB0391302/index.html#" class="dropdown-toggle" data-toggle="dropdown">Administrator</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="http://wbpreview.com/previews/WB0391302/profile.html">Profile</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="http://wbpreview.com/previews/WB0391302/sign.html">Sign</a></li>
+                                        <li><a href="http://wbpreview.com/previews/WB0391302/registration.html">Registration</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="http://wbpreview.com/previews/WB0391302/editor.html">Editor</a></li>
+                                        <li><a href="http://wbpreview.com/previews/WB0391302/error.html">Error</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="">Logout</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="body-contnet">
+                <section id="full-width">
+                    <div class="well well-w-top">
+                        <div class="well-con height">
+                            <div class="top-well">
+                                <h1><i class="s-icon s-icon-stat"></i>Analitic</h1>
+                            </div>
+                            <div class="well-content">
+                                <!--                                <div id="placeholder" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; position: relative; "><canvas class="base" width="1140" height="300"></canvas><canvas class="overlay" width="1140" height="300" style="position: absolute; left: 0px; top: 0px; "></canvas><div class="tickLabels" style="font-size:smaller"><div class="xAxis x1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:center;left:-11px;top:282px;width:76px">0</div><div class="tickLabel" style="position:absolute;text-align:center;left:71px;top:282px;width:76px">1</div><div class="tickLabel" style="position:absolute;text-align:center;left:153px;top:282px;width:76px">2</div><div class="tickLabel" style="position:absolute;text-align:center;left:235px;top:282px;width:76px">3</div><div class="tickLabel" style="position:absolute;text-align:center;left:318px;top:282px;width:76px">4</div><div class="tickLabel" style="position:absolute;text-align:center;left:400px;top:282px;width:76px">5</div><div class="tickLabel" style="position:absolute;text-align:center;left:482px;top:282px;width:76px">6</div><div class="tickLabel" style="position:absolute;text-align:center;left:564px;top:282px;width:76px">7</div><div class="tickLabel" style="position:absolute;text-align:center;left:646px;top:282px;width:76px">8</div><div class="tickLabel" style="position:absolute;text-align:center;left:728px;top:282px;width:76px">9</div><div class="tickLabel" style="position:absolute;text-align:center;left:810px;top:282px;width:76px">10</div><div class="tickLabel" style="position:absolute;text-align:center;left:893px;top:282px;width:76px">11</div><div class="tickLabel" style="position:absolute;text-align:center;left:975px;top:282px;width:76px">12</div><div class="tickLabel" style="position:absolute;text-align:center;left:1057px;top:282px;width:76px">13</div></div><div class="yAxis y1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:right;top:243px;right:1120px;width:20px">-1.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:187px;right:1120px;width:20px">-0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:131px;right:1120px;width:20px">0.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:74px;right:1120px;width:20px">0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:18px;right:1120px;width:20px">1.0</div></div></div></div>-->
+                                <div id="placeholder" style="width: 100%;
+                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;"></div>
+
+                                <div class="statistics-items">
+                                    <ul class="unstyled">
+                                        <li class="pull-left span2">
+                                            <span class="stat-title">
+                                                Состояние
+                                            </span>
+                                            <span class="stat-num" id="state">
+                                                26.06 <span class="stat-percent minus-percent">(-30%)</span>
+                                            </span>
+                                        </li>
+                                        <li class="pull-left span2">
+                                            <span class="stat-title">
+                                                Стресс
+                                            </span>
+                                            <span class="stat-num">
+                                                80.00 <span class="stat-percent plus-percent">(80%)</span>
+                                            </span>
+                                        </li>
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section id="half-width-box">
+                    <div class="row">
+                        <div class="span6">
+                            <div class="well well-w-top">
+                                <div class="well-con height">
+                                    <div class="top-well">
+                                        <h1><i class="s-icon s-icon-posts"></i>Текущие диагностики</h1>
+                                    </div>
+                                    <div class="well-content">
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="post">
+                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
+                                                    <div class="post-date">20-07-2012 22:21</div>
+                                                    <p class="post-short">
+                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
+                                                    </p>
+                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="post">
+                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
+                                                    <div class="post-date">20-07-2012 22:21</div>
+                                                    <p class="post-anotation">
+                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
+                                                    </p>
+                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="post">
+                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
+                                                    <div class="post-date">20-07-2012 22:21</div>
+                                                    <p class="post-short">
+                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
+                                                    </p>
+                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span6">
+                            <div class="well well-w-top">
+                                <div class="well-con height">
+                                    <div class="top-well">
+                                        <h1><i class="s-icon s-icon-capacity"></i>Показатели</h1>
+                                    </div>
+                                    <div class="well-content">
+                                        <p class="well-description">Среднее значение</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" id="average" style="width: 30%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right plus-percent">Показатель в норме</p>
+                                        <p class="well-description">Вариационный размах</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-danger">
+                                                    <div class="bar" id="xid" style="width: 94%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right minus-percent">Напряжение</p>
+
+                                        <p class="well-description">Мода (Мо)</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" style="width: 40%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right">TODO</p>
+
+                                        <p class="well-description">Амплитуда моды (Амо)</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" style="width: 40%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right">TODO</p>
+
+                                        <p class="well-description">Вегетативный показатель ритма (ВПР)</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" style="width: 40%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right">TODO</p>
+
+                                        <p class="well-description">Показатель адекватности процессов регуляции (ПАПР)</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" style="width: 40%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right">TODO</p>
+
+                                        <p class="well-description">Индекс напряжения (ИН)</p>
+                                        <ul class="unstyled">
+                                            <li>
+                                                <div class="progress progress-striped progress-success">
+                                                    <div class="bar" style="width: 40%;"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                        <p class="well-description-small align-right">TODO</p>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+
+
+        </div>
+        <section id="footer">
+            <div class="footer">
+                <div class="container">
+                    <div class="copyright">
+                        Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </h:body>
+</html>
