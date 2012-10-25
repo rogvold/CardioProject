@@ -11,15 +11,19 @@
     </servlet>
     <servlet>
         <servlet-name>data</servlet-name>
-        <servlet-class>ru.fti.servlets.data</servlet-class>
+        <servlet-class>ru.cardio.servlets.data</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>test</servlet-name>
-        <servlet-class>ru.fti.servlets.test</servlet-class>
+        <servlet-class>ru.cardio.servlets.test</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>input</servlet-name>
-        <servlet-class>ru.fti.servlets.input</servlet-class>
+        <servlet-class>ru.cardio.servlets.input</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>why</servlet-name>
+        <servlet-class>ru.cardio.servlets.why</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
@@ -36,6 +40,10 @@
     <servlet-mapping>
         <servlet-name>input</servlet-name>
         <url-pattern>/input</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>why</servlet-name>
+        <url-pattern>/why</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

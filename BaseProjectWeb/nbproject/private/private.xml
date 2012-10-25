@@ -2,15 +2,7 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/fti/servlets/input.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/cardio/utils/XmlUtils.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/cardio/web/test/TestBean.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/web/test.xhtml</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/cardio/entity/Data.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/cardio/converters/DateConverter.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/fti/servlets/test.java</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/web/index3.xhtml</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/web/index2.xhtml</file>
-        <file>file:/home/rogvold/Documents/additional/BaseProjectWeb/src/java/ru/cardio/additional/stuff.txt</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/why.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/input.java</file>
     </open-files>
 </project-private>

@@ -16,64 +16,6 @@
 
         <script type="text/javascript">
             $(function () {
-                // we use an inline data source in the example, usually data would
-                // be fetched from a server
-                var data = [];
-                var totalPoints = 100;
-                var additionalPoints = 5;
-                
-                function getMax(dat){
-                    var a = -1;
-                    for (var i =0; i &lt; totalPoints; ++i){
-                        if (a &lt; dat[i]) a = dat[i];
-                    }
-                    return a;
-                }
-                
-                function getMin(dat){
-                    var a = 10;
-                    for (var i =0; i &lt; totalPoints; ++i){
-                        if (a &gt; dat[i]) a = dat[i];
-                    }
-                    return a;
-                }
-                
-                function getX(dat){
-                    return (getMax(dat) - getMin(dat));
-                }
-                
-                function getAverage(dat){
-                    var a = 0.0;
-                    for (var i = 0; i &lt; dat.length; ++i){
-                        a+=dat[i]; 
-                    }
-                    return a*1.0/totalPoints;
-                }
-                
-                for (var i = 0; i &lt; totalPoints; ++i){
-                    data[i] = 0;
-                }
-                
-                function getData(data){
-                    data = data.replace('[',"").replace(']',"");
-                    var myArray = (" " + data + " ").split(", ");
-                    for(var i=0; i &lt; myArray.length; i++) 
-                    {
-                        myArray[i] = +myArray[i];
-                    } 
-                    return myArray;
-                }
-                function preparedData(str){
-                    addData = getData(str);
-                    for (var i=0; i &lt; totalPoints-additionalPoints; ++i){
-                        data[i] = data[i + additionalPoints];
-                    }
-                    for(var i = totalPoints - additionalPoints; i &lt; totalPoints; ++i){
-                        data[i] = addData[ i - totalPoints + additionalPoints];
-                    }
-                    return data;
-                }
-                
                 var options = {
                     series: { shadowSize: 0, color : '#CC3300'},
                     yaxis: { color: '#92d5ea' },
@@ -84,23 +26,9 @@
                 function update() {
                     var p = $.get("test",function(d){
                         a = eval(d);
-                        //                          alert(d);
-                        //                        var points = preparedData(d);
-                        //                        var t = getAverage(points);
-                        //                        var x = getX(points);
-                        //                        //                        alert(x);
-                        //                        $("#state").html(t);
-                        //                        $("#average").css("width",t*100+"%");
-                        //                        $("#xid").css("width",x*100 + "%");
-                        //                        var res = [];
-                        //                        for (var i = 0; i &lt; points.length; ++i){
-                        //                            res.push([i, points[i]]);
-                        //                        }
-                     var plot = $.plot($("#placeholder"),[a], options); 
-                        //                        plot.draw();
-
+                        var plot = $.plot($("#placeholder"),[a], options); 
                     });
-                                      setTimeout(update, updateInterval);
+                    setTimeout(update, updateInterval);
                 }
                 update();
             });
