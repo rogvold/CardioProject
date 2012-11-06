@@ -15,7 +15,24 @@ CREATE DATABASE cardio
        OWNER=cardio
        CONNECTION LIMIT=-1;
 
-
 36566 instance
-
 60314 admin
+
+{"device_name":"Polar H7","rates":[780,663,769,728,717,721,728,735,733,737,739],"id":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 01:42:37.231"}
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 01:42:45.713"}
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 01:52:55.713"}
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 01:53:05.713"}
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"0", "password":"sabir", "device_id":"456","start":"2012-10-27 01:53:15.713"}
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"0", "password":"sabir", "device_id":"456","start":"2012-10-27 01:53:25.713"}
+
+
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 03:53:25.713"}
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 03:53:35.713"}
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 03:53:45.713"}
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 03:53:55.713"}
+{"device_name":"Polar H7","rates":[769,777,774,753,739,697,687,673,675,679,689],"id":"1", "create":"1", "password":"sabir", "device_id":"456","start":"2012-10-27 03:54:05.713"}

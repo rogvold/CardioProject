@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.parser.ParseException;
-import ru.cardio.core.managers.RateManagerLocal;
+import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.entity.Data;
 import ru.cardio.utils.XmlUtils;
 
@@ -21,7 +21,7 @@ import ru.cardio.utils.XmlUtils;
 public class input extends HttpServlet {
 
     @EJB
-    RateManagerLocal rm;
+    CardioSessionManagerLocal sm;
 
     /**
      * Processes requests for both HTTP
@@ -43,7 +43,9 @@ public class input extends HttpServlet {
             String json = request.getParameter("json");
             System.out.println("servlet: json = " + json);
             Data d = XmlUtils.simpleDataFromJson(json);
-            rm.addRates(d.getRates());
+            sm.addRates(Long.parseLong(d.getId()), d.getRates(), d.getStart(), d.isShouldCreateSession() , d.getPassword());
+            
+//            rm.addRates(d.getRates());
 
             out.println(d);
 

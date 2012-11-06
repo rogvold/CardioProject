@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import ru.cardio.converters.DateConverter;
-import ru.cardio.core.entity.Rate;
+import ru.cardio.core.jpa.entity.Rate;
 import ru.cardio.entity.Data;
 
 /**
@@ -21,6 +21,18 @@ import ru.cardio.entity.Data;
  */
 public class XmlUtils {
 
+    public static final String JSON_FIELD_RATES = "rates";
+    public static final String JSON_FIELD_START = "start";
+    public static final String JSON_FIELD_ID = "id";
+    public static final String JSON_CREATE_SESSION = "create";
+    public static final String JSON_FIELD_PASSWORD = "password";
+    public static final String DATE_MASK = "yyyy-MM-dd HH:mm:ss.SSS";
+    
+    public static final String JSON_CREATE_SESSION_VALUE_TRUE = "1";
+    public static final String JSON_CREATE_SESSION_VALUE_FALSE = "0";
+
+    
+    
     public static Data dataFromXML(String xml) {
         XStream xs = new XStream();
         xs.registerConverter(new DateConverter());
@@ -29,7 +41,7 @@ public class XmlUtils {
         xs.alias("rate", Rate.class);
         xs.alias("root", Data.class);
         Data xd = (Data) xs.fromXML(xml);
-        xd.updateRatesWithCalculateRatesStartDate();
+//        xd.updateRatesWithCalculateRatesStartDate();
         return xd;
     }
 
@@ -41,7 +53,7 @@ public class XmlUtils {
         xs.alias("rate", Rate.class);
         xs.alias("root", Data.class);
         Data xd = (Data) xs.fromXML(json);
-        xd.updateRatesWithCalculateRatesStartDate();
+//        xd.updateRatesWithCalculateRatesStartDate();
         return xd;
     }
 
@@ -50,27 +62,26 @@ public class XmlUtils {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(json);
         JSONObject jsonObj = (JSONObject) obj;
-        JSONArray ja = (JSONArray) jsonObj.get("rates");
+        JSONArray ja = (JSONArray) jsonObj.get(XmlUtils.JSON_FIELD_RATES);
         Object[] arr = ja.toArray();
         Date start = new Date();
 
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        start = formatter.parse(jsonObj.get("start").toString());
+        DateFormat formatter = new SimpleDateFormat(XmlUtils.DATE_MASK);
+        start = formatter.parse(jsonObj.get(XmlUtils.JSON_FIELD_START).toString());
 
-        List<Rate> nrates = new ArrayList();
-        
-        Date d = new Date();
-        d.setTime(start.getTime());
+        List<Integer> nrates = new ArrayList();
         for (Object o : arr) {
-            Rate currRate = new Rate(d, Integer.parseInt(o.toString()));
-            nrates.add(currRate);
-            d = new Date();
-            d.setTime(currRate.getDuration() + currRate.getStart().getTime());
+            nrates.add(Integer.parseInt(o.toString()));
         }
         Data dat = new Data();
         dat.setStart(start);
         dat.setRates(nrates);
-        dat.setId(jsonObj.get("id").toString());
+        dat.setId(jsonObj.get(XmlUtils.JSON_FIELD_ID).toString());
+        dat.setPassword(jsonObj.get(XmlUtils.JSON_FIELD_PASSWORD).toString());
+        
+        String createSession = jsonObj.get(XmlUtils.JSON_CREATE_SESSION).toString();
+        dat.setShouldCreateSession(createSession.equals(XmlUtils.JSON_CREATE_SESSION_VALUE_TRUE) ? true : false);
+        
         return dat;
     }
 }

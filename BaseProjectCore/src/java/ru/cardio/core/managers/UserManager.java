@@ -8,8 +8,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import ru.cardio.core.entity.CardioSession;
-import ru.cardio.core.entity.User;
+import ru.cardio.core.jpa.entity.CardioSession;
+import ru.cardio.core.jpa.entity.User;
+import ru.cardio.core.utils.UserUtils;
 
 /**
  *
@@ -43,29 +44,26 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public User getUserByLogin(String login) {
-        Query q = em.createQuery("select u from User u where u.email=:login").setParameter("login", login);
-        try {
-            return (User) q.getSingleResult();
-        } catch (Exception e) {
-            System.out.println("getUserByLogin: e = " + e.toString());
+    public User registerNewUser(String email, String password, String firstName, String lastName) {
+        if (!UserUtils.isValidEmail(email) || userExistsByEmail(email)) {
             return null;
         }
-    }
-
-    @Override
-    public User registerNewUser(String email, String login, String password) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        User u = new User();
+        u.setEmail(email);
+        u.setPassword(password);
+        u.setFirstName(firstName);
+        u.setLastName(lastName);
+        return em.merge(u);
     }
 
     @Override
     public User logInByEmail(String email, String password) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public User logInByLogin(String login, String password) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        User u = getUserByEmail(email);
+        if (u.getPassword().equals(password)) {
+            return u;
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -74,12 +72,24 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public boolean userExistsByLogin(String login) {
-        return (getUserByLogin(login) == null) ? false : true;
+    public boolean userExistsById(Long userId) {
+        return (getUserById(userId)==null) ? false : true;
     }
 
     @Override
     public CardioSession getLastCardioSession(Long userId) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public boolean checkAuData(Long userId, String password) {
+        System.out.println("checkAuData: userId = " + userId + " / password = " + password);
+        
+        User u = em.find(User.class, userId);
+        try {
+            return u.getPassword().equals(password);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

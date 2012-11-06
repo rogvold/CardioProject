@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.cardio.core.entity;
+package ru.cardio.core.jpa.entity;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -12,6 +12,7 @@ import javax.persistence.*;
  * @author rogvold
  */
 @Entity
+@Table(name="users")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -24,8 +25,13 @@ public class User implements Serializable {
     private String password;
     @Column
     private String login;
-    @Column(name="current_session_id")
-    private Long currentSessionId;
+    @Column
+    private String firstName;
+    
+    @Column
+    private String lastName;
+    
+    
     
     public Long getId() {
         return id;
@@ -35,13 +41,22 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public Long getCurrentSessionId() {
-        return currentSessionId;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setCurrentSessionId(Long currentSessionId) {
-        this.currentSessionId = currentSessionId;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
 
     public String getEmail() {
         return email;

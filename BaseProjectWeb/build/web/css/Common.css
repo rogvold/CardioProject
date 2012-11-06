@@ -24,17 +24,17 @@ code {
     text-shadow: none;
 }
 button {
-   font-family: 'Open Sans', sans-serif;
-   font-weight: 400;
-   text-shadow: 0 1px #000;
-   border-radius: 3px;
-   -webkit-border-radius: 3px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    text-shadow: 0 1px #000;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 table {
-   font-size: 12px;
-   font-family: 'Open Sans', sans-serif;
-   font-weight: 400;
-   text-shadow: 0 1px #000;
+    font-size: 12px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    text-shadow: 0 1px #000;
 }
 .align-right {
     text-align: right !important;
@@ -176,13 +176,13 @@ hr {
     border-bottom: 1px dotted #525356;
 }
 .table-bordered {
-  border: 1px solid #525356;
-  box-shadow: 0 0 1px 0 #000000, 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-  border-collapse: separate;
-  *border-collapse: collapsed;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
+    border: 1px solid #525356;
+    box-shadow: 0 0 1px 0 #000000, 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    border-collapse: separate;
+    *border-collapse: collapsed;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 th {
@@ -304,10 +304,10 @@ th {
     padding:  5px;
 }
 .progress-striped .bar {
-   background-size: 11px 10px;
-   box-shadow: 0 0 1px 0 #000000, 0 1px 1px #fff inset;
-   border-radius: 10px;
-   height: 10px;
+    background-size: 11px 10px;
+    box-shadow: 0 0 1px 0 #000000, 0 1px 1px #fff inset;
+    border-radius: 10px;
+    height: 10px;
 }
 .table td {
     background: url(images/td-bg-1.jpg) repeat;
@@ -518,8 +518,8 @@ input[type="color"]:focus,
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 1), 0 1px 1px rgba(0, 0, 0, 0.05) inset;
 }
 .user-img {
-   border: 1px solid #525356;
-   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 1), 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+    border: 1px solid #525356;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 1), 0 1px 1px rgba(0, 0, 0, 0.05) inset;
 }
 
 /* Orders */
@@ -559,8 +559,12 @@ input[type="color"]:focus,
 .statistics-items li {
     display: inline;
 }
-.stat-title { display: block; font-weight: 700; font-size: 14px; }
+.stat-title {
+    display: block; font-weight: 700; font-size: 14px; 
+    margin-top: 10px;
+}
 .stat-num {
+
     color: #6a6a6a;
     font-size: 14px;
 }

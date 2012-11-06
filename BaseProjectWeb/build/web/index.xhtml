@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta charset="utf-8"/>
@@ -10,27 +10,183 @@
         <link href="../css/bootstrap.css" rel="stylesheet" />
         <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
         <link href="../css/Common.css" rel="stylesheet" />
-        <script src="../js/jquery.min.js"></script>
-        <script src="../js/bootstrap.js"></script>
+        <script src="./js/jquery.min.js"></script>
         <script src="../js/jquery.flot.js"></script>
+        <script src="./js/jquery.flot.selection.js"></script>
+        <script src="./js/jquery.flot.pie.js"></script>
+        <!--        <script src="./js/jquery.js"></script>-->
 
         <script type="text/javascript">
-            $(function () {
-                var options = {
-                    series: { shadowSize: 0, color : '#CC3300'},
-                    yaxis: { color: '#92d5ea' },
-                    xaxis: { mode: "time", color: '#92d5ea'}
-                };
-                var updateInterval = 1000;
-                function update() {
-                    var p = $.get("test",function(d){
-                        a = eval(d);
-                        var plot = $.plot($("#placeholder"),[a], options); 
-                    });
-                    setTimeout(update, updateInterval);
+            
+            var plot;
+            var intervalMinutes = 1;
+            var options = {
+                series: { shadowSize: 0, color : '#CC3300'},
+                yaxis: { color: '#92d5ea' },
+                xaxis: { mode: "time", color: '#92d5ea'},
+                selection: { mode: "x" },
+                grid: { hoverable: true, clickable: true } 
+            };
+            var optionsMini = {
+                series: { shadowSize: 0, color : '#CF3300'},
+                yaxis: { color: '#92d5ea' },
+                xaxis: { mode: "time", color: '#92d5ea'}
+            };
+            
+            var updateInterval = 3000;
+            var selectionStart = 0;
+            var selectionEnd = 0;
+            var interval = 1000*60* intervalMinutes;
+            var secondLine = [];
+            var currentIntervals = [];
+            var currentSessionIntervals = [];
+            
+            if (#{webSession.signedIn == false} ){ // TODO: change on f:event
+                window.location = "login.xhtml";
+            }
+            
+            $(function(){
+                if (#{webSession.signedIn == false} ){
+                    window.location = "login.xhtml";
                 }
                 update();
-            });
+            })
+            
+            function getRequestString(ints){
+                var s = "";
+                for (var i = 0; i &lt; ints.length - 1; i++){
+                    s+=ints[i][1] + ",";
+                }
+                s += ints[ints.length - 1][1];
+                return s;
+            }
+
+            function getSelectedIntervals(start , end, intervals){
+                var list = [];
+                for (var i = 0; i &lt; intervals.length; i++){
+                    if ((intervals[i][0] &lt;= end ) &amp;&amp; (intervals[i][0] &gt;= start)){
+                        list.push( [ intervals[i][0] , intervals[i][1] ]);
+                    }
+                }
+                return list;
+            }
+
+            function getSelectedIntervalsValue(start , end, intervals){
+                var list = getSelectedIntervals(start,end,intervals);
+                list2 = [];
+                for (var i = 0;  i &lt; list.length; i++){
+                    list2.push([list[i][1]]);
+                }
+                return list2;
+            }
+
+            function getTheSecondLine(start, end){
+                var mas = [];
+                for (var i=start; i &lt; end; i+=interval){
+                    mas.push([ i , 0]);
+                }
+                return mas;
+            }
+            
+            function drawMiniPlot(intervals){
+                plot2 = $.plot($("#miniPlaceholder"),
+                [   {data: intervals, lines: {show:true}} ], optionsMini);
+                updateIndicators(intervals);
+            }
+            
+            function updateIndicators(intervals){
+                $.ajax({
+                    type: "POST",
+                    url: "indicators",
+                    data: { intervals: getRequestString(intervals) }
+                }).done(function( msg ) {
+                    var json = JSON.parse(msg);
+                    $("#tp_span").html(json.TP);
+                    $("#ic_span").html(json.IC);
+                    $("#in_span").html(json.IN);
+                    $("#bp_span").html(json.BP);
+                    $("#amo_span").html(json.AMoPercents);
+                    $("#rrnn_span").html(json.RRNN);
+                    $("#sdnn_span").html(json.SDNN);
+                    $("#pnn50_span").html(json.PNN50);
+                    
+                    drawSpectrumChart(json.HFPercents, json.LFPercents, json.VLFPercents, json.ULFPercents );
+                    
+                });
+            }
+            
+            function drawSpectrumChart(hf, lf, vlf, ulf){
+                var data = [];
+                data = [{ label: "HF", data: hf }, { label: "LF", data: lf }, { label: "VLF", data: vlf }, { label: "ULF", data: ulf } ];
+
+                $.plot($("#spectrumPlaceholder"), data, 
+                {
+                    series: {
+                        pie: { 
+                            show: true
+                            
+                        }
+                    },
+                    legend: {
+                        show: false
+                    }
+                });
+            }
+            
+            function updateSelection(start , end){
+                plot.setSelection({ xaxis: { from: start, to: end } });
+                selectionStart = start;
+                selectionEnd = end;
+                //                drawMiniPlot(getSelectedIntervals(selectionStart, selectionEnd, currentSessionIntervals));
+            }
+            
+            function nextSelection(){
+                if ( selectionStart + 1000*60*intervalMinutes &gt; currentSessionIntervals[currentSessionIntervals.length - 1][0]){
+                    updateSelection(currentSessionIntervals[0][0], currentSessionIntervals[0][0] + 1000*60*intervalMinutes);
+                    drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
+                    return;
+                }
+                updateSelection(selectionStart + 1000*60*intervalMinutes,  selectionEnd + 1000*60*intervalMinutes);
+                drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
+            }
+            
+            function update() {
+                var csId = "#sessionTr" + $("#selectedSessionId").html();
+                $(".sessionTrClass").css("color","white");
+                $(csId).css("color","yellow");
+
+                
+                var p = $.get("test?sessionId="+$("#selectedSessionId").html() ,function(d){
+                    a = eval(d);
+                    currentSessionIntervals = a;
+                    secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
+                    //                    alert(secondLine);
+                    plot = $.plot($("#placeholder"),
+                    [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}], options); 
+                    
+                    updateSelection(selectionStart, selectionEnd);
+                    
+                    $("#placeholder").bind("plotclick", function (event, pos, item) {
+                        plot.unhighlight();
+                        if (item) {
+                            plot.highlight(item.series, item.datapoint);
+                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
+                            drawMiniPlot(currentIntervals);
+                        }
+                    });
+
+                    
+                });
+                    
+                if ($("#selectedSessionStatus").html() == "1"){
+                    setTimeout(update, updateInterval);
+                }
+            }
+            
+            
+            
+            //            });
         </script>
     </h:head>
     <h:body>
@@ -41,31 +197,31 @@
                         <div class="container">
                             <ul class="nav">
                                 <li>
-                                    <a href="index.html">
+                                    <a href="javascript:void()">
                                         Dashboard <span class="label label-important">7</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/messages.html">
+                                    <a href="javascript:void()">
                                         Messages <span class="label label-important">+3</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/orders.html">
+                                    <a href="javascript:void()">
                                         Orders <span class="label label-important">+21</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/faq.html">
+                                    <a href="javascript:void()">
                                         FAQ
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/components.html">
+                                    <a href="javascript:void()">
                                         Components
                                     </a>
                                 </li>
@@ -76,17 +232,17 @@
                             </form>
                             <ul class="nav pull-right">
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/index.html#" class="dropdown-toggle" data-toggle="dropdown">Administrator</a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="http://wbpreview.com/previews/WB0391302/profile.html">Profile</a></li>
+                                        <li><a href="#">Profile</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="http://wbpreview.com/previews/WB0391302/sign.html">Sign</a></li>
-                                        <li><a href="http://wbpreview.com/previews/WB0391302/registration.html">Registration</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="http://wbpreview.com/previews/WB0391302/editor.html">Editor</a></li>
-                                        <li><a href="http://wbpreview.com/previews/WB0391302/error.html">Error</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="">Logout</a></li>
+                                        <li><a href="#" >
+                                                <h:form>
+                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                                </h:form>
+                                            </a>
+                                            <!--                                            <a href="">Logout</a>-->
+                                        </li>
                                     </ul>
                                 </li>
                             </ul>
@@ -98,7 +254,7 @@
             <section id="body-contnet">
                 <section id="full-width">
                     <div class="well well-w-top">
-                        <div class="well-con height">
+                        <div class="well-con height" >
                             <div class="top-well">
                                 <h1><i class="s-icon s-icon-stat"></i>Analitic</h1>
                             </div>
@@ -108,25 +264,8 @@
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;"></div>
 
                                 <div class="statistics-items">
-                                    <ul class="unstyled">
-                                        <li class="pull-left span2">
-                                            <span class="stat-title">
-                                                Состояние
-                                            </span>
-                                            <span class="stat-num" id="state">
-                                                26.06 <span class="stat-percent minus-percent">(-30%)</span>
-                                            </span>
-                                        </li>
-                                        <li class="pull-left span2">
-                                            <span class="stat-title">
-                                                Стресс
-                                            </span>
-                                            <span class="stat-num">
-                                                80.00 <span class="stat-percent plus-percent">(80%)</span>
-                                            </span>
-                                        </li>
+                                    <h3> Выберите интервал для анализа (нажмите на красную точку)</h3>
 
-                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -134,127 +273,131 @@
                 </section>
                 <section id="half-width-box">
                     <div class="row">
-                        <div class="span6">
+                        <div class="span3">
                             <div class="well well-w-top">
-                                <div class="well-con height">
+                                <div class="well-con height" style="overflow-y: auto; max-height: 410px;">
                                     <div class="top-well">
-                                        <h1><i class="s-icon s-icon-posts"></i>Текущие диагностики</h1>
+                                        <h1><i class="s-icon s-icon-posts"></i>Мои сессии</h1>
                                     </div>
                                     <div class="well-content">
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="post">
-                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
-                                                    <div class="post-date">20-07-2012 22:21</div>
-                                                    <p class="post-short">
-                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
-                                                    </p>
-                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="post">
-                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
-                                                    <div class="post-date">20-07-2012 22:21</div>
-                                                    <p class="post-anotation">
-                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
-                                                    </p>
-                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="post">
-                                                    <div class="post-title"><a href="">Duis aute irure dolor in reprehenderit</a></div>
-                                                    <div class="post-date">20-07-2012 22:21</div>
-                                                    <p class="post-short">
-                                                        Like you, we love building awesome products on the web. We love it so much, we decided to help people just like us do it easier, better, and faster. Bootstrap is built for you.
-                                                    </p>
-                                                    <div class="post-helprs pull-right"><a href="#">Edit</a>  |  <a href="">Delete</a></div>
-                                                </div>
-                                            </li>
+                                        <table class="table table-striped pull-left">
+                                            <thead>
+                                                <tr>
+                                                    <!--                                                    <th>ID</th>-->
+                                                    <th>Start date</th>
+                                                    <!--                                                    <th>Rates amount</th>-->
+                                                    <th>Duration</th>
+                                                    <th>Status</th>
+                                                    <th></th>
+                                                </tr></thead>
+                                            <tbody>
+                                                <c:forEach var="csId" items="#{cardioSessionBean.userCardioSessions}">
+                                                    <tr id="sessionTr#{csId}" class="sessionTrClass">
+<!--                                                        <td>#{csId}</td>-->
+                                                        <td>
+                                                            <h:outputText value="#{cardioSessionBean.startDateBySessionId(csId)}">
+                                                                <f:convertDateTime timeZone="GMT+4" pattern="dd.MM.YYYY в HH.mm" />
+                                                            </h:outputText>
+                                                        </td>
+<!--                                                        <td><span class="price">#{cardioSessionBean.amountOfRatesById(csId)}</span></td>-->
 
-                                        </ul>
+                                                        <td>#{cardioSessionBean.prettyDurationBySessionId(csId)}</td>   
+
+                                                        <td>
+                                                            <c:if test="#{cardioSessionBean.statusBySessionId(csId) == 1}" >
+                                                                <span class="price">Current</span>
+                                                            </c:if>
+                                                            <c:if test="#{cardioSessionBean.statusBySessionId(csId) == 0}" >
+                                                                <span class="minus-percent">Old</span>
+                                                            </c:if>
+                                                        </td>   
+                                                        <td class="align-right">
+                                                            <a href="#">
+                                                                <h:form style="display: inline-block;">
+                                                                    <ppctu:commandLink update="callbackSpan" oncomplete="update();" process="@this"   actionListener="#{cardioSessionBean.changeSelectedSession(csId)}">
+                                                                        View
+                                                                    </ppctu:commandLink>
+                                                                </h:form>
+                                                            </a>
+                                                            <!--                                                            | 
+                                                                                                                        <a href="#">Delete</a>-->
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="span6">
+                        <div class="span9">
                             <div class="well well-w-top">
                                 <div class="well-con height">
                                     <div class="top-well">
-                                        <h1><i class="s-icon s-icon-capacity"></i>Показатели (TODO)</h1>
+                                        <h1>Показатели | <a href="javascript: void();" onclick=" nextSelection();"> next 5 min. interval</a></h1>
                                     </div>
-                                    <div class="well-content">
-                                        <p class="well-description">Среднее значение</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" id="average" style="width: 30%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right plus-percent">Показатель в норме</p>
-                                        <p class="well-description">Вариационный размах</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-danger">
-                                                    <div class="bar" id="xid" style="width: 94%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right minus-percent">Напряжение</p>
-
-                                        <p class="well-description">Мода (Мо)</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" style="width: 40%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right">TODO</p>
-
-                                        <p class="well-description">Амплитуда моды (Амо)</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" style="width: 40%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right">TODO</p>
-
-                                        <p class="well-description">Вегетативный показатель ритма (ВПР)</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" style="width: 40%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right">TODO</p>
-
-                                        <p class="well-description">Показатель адекватности процессов регуляции (ПАПР)</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" style="width: 40%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right">TODO</p>
-
-                                        <p class="well-description">Индекс напряжения (ИН)</p>
-                                        <ul class="unstyled">
-                                            <li>
-                                                <div class="progress progress-striped progress-success">
-                                                    <div class="bar" style="width: 40%;"></div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <p class="well-description-small align-right">TODO</p>
+                                    <div id="miniPlaceholder" style="display: block; width: 100%; height:200px;">
 
                                     </div>
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Спектральный анализ</h1>
+                                        </div>
+                                        <div id="spectrumPlaceholder" style="width: 100%; height: 150px;">
+
+                                        </div>
+
+                                        <span class="stat-title">TP (Общая мощность спектра): 
+                                            <span class="stat-num plus-percent" id="tp_span"></span>
+
+                                        </span>
+                                        <span class="stat-title">ИЦ(Индекс централизации):
+                                            <span class="stat-num plus-percent" id="ic_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span3 well-con well">
+                                        <div class="top-well">
+                                            <h1>Вариационная пульсометрия</h1>
+                                        </div>
+
+                                        <span class="stat-title">ИН (Индекс напряжения): 
+                                            <span class="stat-num plus-percent" id="in_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">ВР (Вариационный размах):
+                                            <span class="stat-num plus-percent" id="bp_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">AMo (Ампитуда моды):
+                                            <span class="stat-num plus-percent" id="amo_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Статистический анализ</h1>
+                                        </div>
+
+                                        <span class="stat-title">RRNN (Среднее значение): 
+                                            <span class="stat-num plus-percent" id="rrnn_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">SDNN (средн. квадр. откл.):
+                                            <span class="stat-num plus-percent" id="sdnn_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span3 well-con well">
+                                        <div class="top-well">
+                                            <h1>Временной анализ</h1>
+                                        </div>
+
+                                        <span class="stat-title">PNN50: 
+                                            <span class="stat-num plus-percent" id="pnn50_span"></span>
+                                        </span>
+                                    </span>
+
                                 </div>
                             </div>
                         </div>
@@ -274,6 +417,11 @@
                 </div>
             </div>
         </section>
+
+        <h:panelGroup id="callbackSpan" style="display: none;" >
+            <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
+            <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
+        </h:panelGroup>
 
 
     </h:body>

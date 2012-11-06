@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.servlets;
 
 import java.io.IOException;
@@ -13,8 +9,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import ru.cardio.core.entity.Rate;
+import ru.cardio.core.jpa.entity.Rate;
+import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.core.managers.RateManagerLocal;
+import web.utils.SessionUtils;
 
 /**
  *
@@ -23,12 +21,12 @@ import ru.cardio.core.managers.RateManagerLocal;
 public class test extends HttpServlet {
 
     public static final int FRESH_AMOUNT = 100;
-    
     @EJB
     RateManagerLocal rm;
-    
+    @EJB
+    CardioSessionManagerLocal sm;
     private List<Rate> freshRates;
-    
+
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -40,29 +38,24 @@ public class test extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @PostConstruct
-    private void myInit(){
+    private void myInit() {
         freshRates = rm.getLastRates(FRESH_AMOUNT);
     }
-    
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            /*
-             * TODO output your page here. You may use following sample code.
-             */
-//            out.println(rm.getLastRates(FRESH_AMOUNT));
-            out.println(rm.getPlotData(rm.getLastRates(FRESH_AMOUNT)));
-//            out.println("<html>");
-//            out.println("<head>");
-//            out.println("<title>Servlet test</title>");            
-//            out.println("</head>");
-//            out.println("<body>");
-//            out.println("<h1>Servlet test at " + request.getContextPath() + "</h1>");
-//            out.println("</body>");
-//            out.println("</html>");
-        } finally {            
+            try {
+                Long sessionId = Long.parseLong(request.getParameter("sessionId"));
+                System.out.println("test servlet : sessionId = " + sessionId);
+                out.println(sm.getPlotDataOfRatesInMyCardioSession(sessionId, -1, SessionUtils.getUserId()));
+
+            } catch (Exception e) {
+            }
+
+        } finally {
             out.close();
         }
     }

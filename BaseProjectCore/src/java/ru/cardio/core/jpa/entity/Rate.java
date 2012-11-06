@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ru.cardio.core.entity;
+package ru.cardio.core.jpa.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,21 +13,26 @@ import javax.persistence.*;
  * @author rogvold
  */
 @Entity
-public class CardioSession implements Serializable {
+public class Rate implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column
-    private String rates;
-    
-    @Column
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    private Date startDate;
+    @Column
+    private Date start;
+    @Column
+    private int duration;
+
+    public Rate(Date start, int duration) {
+        this.start = start;
+        this.duration = duration;
+    }
+
+    public Rate() {
+    }
     
-    @Column(name="user_id")
-    private Long userId;
     
     
     public Long getId() {
@@ -38,32 +43,6 @@ public class CardioSession implements Serializable {
         this.id = id;
     }
 
-    public String getRates() {
-        return rates;
-    }
-
-    public void setRates(String rates) {
-        this.rates = rates;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -71,13 +50,32 @@ public class CardioSession implements Serializable {
         return hash;
     }
 
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public Date getStart() {
+        return start;
+    }
+
+    public void setStart(Date start) {
+        this.start = start;
+    }
+    
+    
+    
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof CardioSession)) {
+        if (!(object instanceof Rate)) {
             return false;
         }
-        CardioSession other = (CardioSession) object;
+        Rate other = (Rate) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -86,7 +84,7 @@ public class CardioSession implements Serializable {
 
     @Override
     public String toString() {
-        return "ru.cardio.core.entity.Session[ id=" + id + " ]";
+        return "("+this.start+";"+this.duration+")";
     }
     
 }

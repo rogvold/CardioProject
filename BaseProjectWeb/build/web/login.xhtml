@@ -1,60 +1,120 @@
-<!DOCTYPE html>
-<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
+
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui">
     <h:head>
+
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta charset="utf-8"/>
-        <title>Twitter Bootstrap</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link href="../css/bootstrap.css" rel="stylesheet" />
-        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
-        <link href="../css/Common.css" rel="stylesheet" />
+        <!-- Always force latest IE rendering engine or request Chrome Frame -->
+        <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+        <title>Plastique Theme</title>
+        <link href="#{request.contextPath}/css2/application.css" media="screen" rel="stylesheet" type="text/css"/>
+        <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0"/>
+        <link type="text/css" rel="stylesheet" href="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/style.css"/>
+        <script type="text/javascript" charset="utf-8" src="chrome-extension://cpngackimfmofbokmjmljamhdncknpmg/page_context.js">      </script>
+        <script>window["_GOOG_TRANS_EXT_VER"] = "1";</script>
         <script src="../js/jquery.min.js"></script>
-        <script src="../js/bootstrap.js"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                
+                if (#{webSession.signedIn == true} ){
+                    window.location = "index.xhtml";
+                }
+                
+                
+                $("#register-link").click(function (){
+                    $("#login").css("display","none");
+                    $("#register").css("display","block");
+                    
+                    $("#register-words").css("display","none");
+                    $("#login-words").css("display","inline-block");
+                });
+                
+                $("#login-link").click(function (){
+                    $("#register").css("display","none");
+                    $("#login").css("display","block");
+                    
+                    $("#login-words").css("display","none");
+                    $("#register-words").css("display","inline-block");
+                });
+                
+                $("#close_notif").click(function(){
+                    $("#notifications").fadeOut(); 
+                });
+            });
+            
+            function notif(){      
+                var flag =$("#loginFlag").html();
+                if (flag == "loggedIn") {
+                    window.location = "index.xhtml";
+                } else
+                    $("#notifications").fadeIn();
+            }
+            
+        </script>
+
+
     </h:head>
-    <h:body>
+    <h:body class="login">
 
-        <div id="login-manager">
-            <div id="login" class="login-wrapper animated" style="display: none; ">
-                <form action="../dashboard/stats.html" method="get">
-                    <div class="input-group">
-                        <input type="text" placeholder="email" class="input-transparent" id="email"/>
-                        <input type="password" placeholder="password" class="input-transparent"/>
+        <h:panelGroup id="loginFlag">#{loginBean.flag}</h:panelGroup>
+
+        <div class="container">
+            <div class="row" id="notifications-wrapper">
+                <div id="notifications" style="display: none;" class="span6 offset3 notifications animated">
+                    <div id="content" class="span5" style="min-height: 50px; padding-top: 20px; padding-bottom: 20px;">
+                        <h:panelGroup id="notifSpan">#{loginBean.notificationText}</h:panelGroup>
                     </div>
-                    <button id="login-submit" type="submit" class="login-button">Login</button>
-                </form>
-            </div>
-
-            <div id="register" class="login-wrapper animated" style="">
-                <form action="../dashboard/stats.html" method="get">
-                    <div class="input-group">
-                        <input type="text" placeholder="email" class="input-transparent"/>
-                        <input type="text" placeholder="first name" class="input-transparent"/>
-                        <input type="text" placeholder="last name" class="input-transparent"/>
-                        <input type="email" placeholder="confirm password" class="input-transparent"/>
-                        <input type="password" placeholder="password" class="input-transparent"/>
-                    </div>
-                    <button id="register-submit" type="submit" class="login-button">Register</button>
-                </form>
-            </div>
-
-            <div id="forgot" class="login-wrapper animated" style="display: none; ">
-                <form action="../dashboard/stats.html" method="get">
-                    <div class="input-group">
-                        <input type="text" placeholder="email" class="input-transparent"/>
-                    </div>
-                    <button id="forgot-submit" type="submit" class="login-button">Recover</button>
-                </form>
-            </div>
-
-            <div class="inner-well" style="text-align: center; margin: 20px 0;">
-                <a href="#" id="login-link" class="button mini rounded gray" style="display: inline-block; "><i class="icon-signin"></i> Login</a>
-                <a href="#" id="register-link" class="button mini rounded gray" style="display: none; "><i class="icon-plus"></i> Register</a>
-                <a href="#" id="forgot-link" class="button mini rounded gray" style="display: inline-block; "><i class="icon-question-sign"></i> Forgot Password?</a>
+                    <span style="margin-left: 50px; cursor: pointer;" id="close_notif">X</span>
+                </div>
             </div>
         </div>
 
 
+        <div class="container">
+            <div class="login-wrapper" style="margin-top: 120px">
+
+
+                <div id="login-manager">
+                    <div id="login" class="login-wrapper animated" style="display: block; ">
+                        <h:form action="#" method="get" prependId="false">
+                            <div class="input-group">
+                                <h:inputText placeholder="email" value="#{loginBean.email}"  class="input-transparent" id="email" />
+                                <h:inputText placeholder="password" value="#{loginBean.password}" class="input-transparent" id="password" />
+                            </div>
+                            <ppctu:commandButton oncomplete="notif();" update="notifSpan,loginFlag" styleClass="login-button" value="Войти" actionListener="#{loginBean.login()}" />
+                        </h:form>
+                    </div>
+
+                    <div id="register" class="login-wrapper animated" style="display: none; ">
+                        <h:form action="#" method="get" prependId="false">
+                            <div class="input-group">
+                                <h:inputText placeholder="email *" value="#{loginBean.email}"  class="input-transparent" id="r_email" />
+                                <h:inputText placeholder="first name" value="#{loginBean.firstName}" class="input-transparent" id="r_first_name" />
+                                <h:inputText placeholder="last name" value="#{loginBean.lastName}" class="input-transparent" id="r_last_name" />
+
+                                <h:inputText placeholder="password *" value="#{loginBean.password}" class="input-transparent" id="r_password" />
+                                <h:inputText placeholder="confirm password *" value="#{loginBean.confirmPassword}" class="input-transparent" id="r_confirm_password" />
+
+                            </div>
+
+                            <ppctu:commandButton oncomplete="notif();" update="notifSpan,loginFlag" styleClass="login-button" value="Зарегистрироваться" actionListener="#{loginBean.register()}" />
+                        </h:form>
+                    </div>
+
+                    <div class="inner-well" style="text-align: center; margin: 20px 0;">
+                        <span id="login-words" style="display: none;">
+                            <span style="color: white;"> Уже зарегистрированы ?</span> 
+                            <a href="#" id="login-link" class="button mini rounded gray"><i class="icon-signin"></i> Войти</a>
+                        </span>
+                        <span id="register-words" style="display: inline-block; ">
+                            <span style="color: white;"> Еще не зарегистрировались ?</span> 
+                            <a href="#" id="register-link" class="button mini rounded gray" ><i class="icon-plus"></i> Регистрация</a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </h:body>
 </html>

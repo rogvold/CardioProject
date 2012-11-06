@@ -7,7 +7,7 @@ package ru.cardio.core.managers;
 import java.util.Date;
 import java.util.List;
 import javax.ejb.Local;
-import ru.cardio.core.entity.Rate;
+import ru.cardio.core.jpa.entity.Rate;
 
 /**
  *
