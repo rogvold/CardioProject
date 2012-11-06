@@ -150,13 +150,17 @@
                 drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
             }
             
-            function update() {
-                var csId = "#sessionTr" + $("#selectedSessionId").html();
-                $(".sessionTrClass").css("color","white");
-                $(csId).css("color","yellow");
-
-                
-                var p = $.get("test?sessionId="+$("#selectedSessionId").html() ,function(d){
+            myPlotBinding = function (event, pos, item) {
+                        plot.unhighlight();
+                        if (item) {
+                            plot.highlight(item.series, item.datapoint);
+                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
+                            drawMiniPlot(currentIntervals);
+                        }
+                    }
+            
+            myHandler = function(d){
                     a = eval(d);
                     currentSessionIntervals = a;
                     secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
@@ -166,18 +170,19 @@
                     
                     updateSelection(selectionStart, selectionEnd);
                     
-                    $("#placeholder").bind("plotclick", function (event, pos, item) {
-                        plot.unhighlight();
-                        if (item) {
-                            plot.highlight(item.series, item.datapoint);
-                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
-                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
-                            drawMiniPlot(currentIntervals);
-                        }
-                    });
-
+                    $("#placeholder").bind("plotclick", myPlotBinding);
+                    d = null;
                     
-                });
+                }
+                
+                
+            function update() {
+                var csId = "#sessionTr" + $("#selectedSessionId").html();
+                $(".sessionTrClass").css("color","white");
+                $(csId).css("color","yellow");
+
+                
+                var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
                     
                 if ($("#selectedSessionStatus").html() == "1"){
                     setTimeout(update, updateInterval);
