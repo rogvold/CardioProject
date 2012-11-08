@@ -18,8 +18,10 @@
 
         <script type="text/javascript">
             
+            var updateInterval = 5000;
+            var CRITICAL_LOADINGS_AMOUNT = 15;
             var plot;
-            var intervalMinutes = 1;
+            var intervalMinutes = 5;
             var options = {
                 series: { shadowSize: 0, color : '#CC3300'},
                 yaxis: { color: '#92d5ea' },
@@ -33,13 +35,21 @@
                 xaxis: { mode: "time", color: '#92d5ea'}
             };
             
-            var updateInterval = 3000;
+
             var selectionStart = 0;
             var selectionEnd = 0;
             var interval = 1000*60* intervalMinutes;
             var secondLine = [];
             var currentIntervals = [];
             var currentSessionIntervals = [];
+            var myData = [];
+            var rendered = false;
+            
+            var paused = false;
+            var pausedButtonRendered = true;
+            
+            var loadingsAmount = 0;
+
             
             if (#{webSession.signedIn == false} ){ // TODO: change on f:event
                 window.location = "login.xhtml";
@@ -51,6 +61,10 @@
                 }
                 update();
             })
+            
+            function updatePauseButton(){
+                
+            }
             
             function getRequestString(ints){
                 var s = "";
@@ -68,6 +82,7 @@
                         list.push( [ intervals[i][0] , intervals[i][1] ]);
                     }
                 }
+
                 return list;
             }
 
@@ -77,6 +92,7 @@
                 for (var i = 0;  i &lt; list.length; i++){
                     list2.push([list[i][1]]);
                 }
+                                
                 return list2;
             }
 
@@ -151,40 +167,79 @@
             }
             
             myPlotBinding = function (event, pos, item) {
-                        plot.unhighlight();
-                        if (item) {
-                            plot.highlight(item.series, item.datapoint);
-                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
-                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
-                            drawMiniPlot(currentIntervals);
-                        }
-                    }
+                plot.unhighlight();
+                if (item) {
+                    plot.highlight(item.series, item.datapoint);
+                    updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                    currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
+                    drawMiniPlot(currentIntervals);
+                }
+            }
             
             myHandler = function(d){
-                    a = eval(d);
-                    currentSessionIntervals = a;
-                    secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
-                    //                    alert(secondLine);
-                    plot = $.plot($("#placeholder"),
-                    [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}], options); 
-                    
-                    updateSelection(selectionStart, selectionEnd);
-                    
-                    $("#placeholder").bind("plotclick", myPlotBinding);
-                    d = null;
-                    
-                }
+                a = eval(d);
                 
+                currentSessionIntervals = a;
+                secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
+                //                    alert(secondLine);
+                myData = [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
+                
+                if (!rendered){
+                    plot = $.plot($("#placeholder"),myData , options); 
+                    rendered = true;
+                } else{ 
+                    plot.setData(myData);
+                    plot.setupGrid();
+                    plot.draw();
+                }
+                    
+                updateSelection(selectionStart, selectionEnd);
+                    
+                $("#placeholder").bind("plotclick", myPlotBinding);
+                d = null;
+                    
+            }
+              
+            function processLoadingsAmount(){
+                loadingsAmount = loadingsAmount + 1;
+                if (loadingsAmount == CRITICAL_LOADINGS_AMOUNT){
+                    window.location = window.location;
+                    //                    alert('!!!');
+                }
+            }  
+                
+            function updatePlayerButton(){
+                if ($("#selectedSessionStatus").html() == "1"){
+                    $("#player").css("display","inline-block");
+                } else {
+                    $("#player").css("display","none");
+                }
+            }
+            
+            function updatePlayerButtonStatus(){
+                paused = !paused;
+                if (paused) {
+                    $("#play").css("display", "inline-block");
+                    $("#pause").css("display", "none");
+                } else{
+                    $("#play").css("display", "none");
+                    $("#pause").css("display", "inline-block");
+                }
+                update();
+            }
                 
             function update() {
+                updatePlayerButton();
+                processLoadingsAmount();
                 var csId = "#sessionTr" + $("#selectedSessionId").html();
                 $(".sessionTrClass").css("color","white");
                 $(csId).css("color","yellow");
 
-                
-                var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
+//                if (!paused){
+                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
+//                }
                     
-                if ($("#selectedSessionStatus").html() == "1"){
+                if ( ($("#selectedSessionStatus").html() == "1" ) &amp;&amp; (!paused)){
                     setTimeout(update, updateInterval);
                 }
             }
@@ -269,7 +324,13 @@
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;"></div>
 
                                 <div class="statistics-items">
-                                    <h3> Выберите интервал для анализа (нажмите на красную точку)</h3>
+                                    <span style="color:#A5AAB0; font-size: 16px;" class="span8"> Выберите интервал для анализа (нажмите на красную точку)</span>
+                                    <span style="text-align: right;" class="span3">
+                                        <span id="player" style="cursor: pointer;">
+                                            <img src="./images/play.ico" style="width: 22px; display: none;" onclick="updatePlayerButtonStatus();" id="play" />
+                                            <img src="./images/pause.ico" style="width: 22px; display: inline-block ;" onclick="updatePlayerButtonStatus();" id="pause" />
+                                        </span>
+                                    </span>
 
                                 </div>
                             </div>
@@ -405,6 +466,8 @@
 
                                 </div>
                             </div>
+
+
                         </div>
                     </div>
                 </section>

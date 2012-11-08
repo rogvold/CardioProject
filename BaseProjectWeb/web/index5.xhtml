@@ -13,6 +13,7 @@
         <script src="./js/jquery.min.js"></script>
         <script src="../js/jquery.flot.js"></script>
         <script src="./js/jquery.flot.selection.js"></script>
+        <script src="./js/jquery.flot.pie.js"></script>
         <!--        <script src="./js/jquery.js"></script>-->
 
         <script type="text/javascript">
@@ -37,6 +38,8 @@
             var selectionEnd = 0;
             var interval = 1000*60* intervalMinutes;
             var secondLine = [];
+            var currentIntervals = [];
+            var currentSessionIntervals = [];
             
             if (#{webSession.signedIn == false} ){ // TODO: change on f:event
                 window.location = "login.xhtml";
@@ -47,8 +50,16 @@
                     window.location = "login.xhtml";
                 }
                 update();
-
             })
+            
+            function getRequestString(ints){
+                var s = "";
+                for (var i = 0; i &lt; ints.length - 1; i++){
+                    s+=ints[i][1] + ",";
+                }
+                s += ints[ints.length - 1][1];
+                return s;
+            }
 
             function getSelectedIntervals(start , end, intervals){
                 var list = [];
@@ -79,44 +90,107 @@
             
             function drawMiniPlot(intervals){
                 plot2 = $.plot($("#miniPlaceholder"),
-                [   {data: intervals, lines: {show:true}} ], optionsMini); 
+                [   {data: intervals, lines: {show:true}} ], optionsMini);
+                updateIndicators(intervals);
             }
             
+            function updateIndicators(intervals){
+                $.ajax({
+                    type: "POST",
+                    url: "indicators",
+                    data: { intervals: getRequestString(intervals) }
+                }).done(function( msg ) {
+                    var json = JSON.parse(msg);
+                    $("#tp_span").html(json.TP);
+                    $("#ic_span").html(json.IC);
+                    $("#in_span").html(json.IN);
+                    $("#bp_span").html(json.BP);
+                    $("#amo_span").html(json.AMoPercents);
+                    $("#rrnn_span").html(json.RRNN);
+                    $("#sdnn_span").html(json.SDNN);
+                    $("#pnn50_span").html(json.PNN50);
+                    
+                    drawSpectrumChart(json.HFPercents, json.LFPercents, json.VLFPercents, json.ULFPercents );
+                    
+                });
+            }
+            
+            function drawSpectrumChart(hf, lf, vlf, ulf){
+                var data = [];
+                data = [{ label: "HF", data: hf }, { label: "LF", data: lf }, { label: "VLF", data: vlf }, { label: "ULF", data: ulf } ];
+
+                $.plot($("#spectrumPlaceholder"), data, 
+                {
+                    series: {
+                        pie: { 
+                            show: true
+                            
+                        }
+                    },
+                    legend: {
+                        show: false
+                    }
+                });
+            }
+            
+            function updateSelection(start , end){
+                plot.setSelection({ xaxis: { from: start, to: end } });
+                selectionStart = start;
+                selectionEnd = end;
+                //                drawMiniPlot(getSelectedIntervals(selectionStart, selectionEnd, currentSessionIntervals));
+            }
+            
+            function nextSelection(){
+                if ( selectionStart + 1000*60*intervalMinutes &gt; currentSessionIntervals[currentSessionIntervals.length - 1][0]){
+                    updateSelection(currentSessionIntervals[0][0], currentSessionIntervals[0][0] + 1000*60*intervalMinutes);
+                    drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
+                    return;
+                }
+                updateSelection(selectionStart + 1000*60*intervalMinutes,  selectionEnd + 1000*60*intervalMinutes);
+                drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
+            }
+            
+            myPlotBinding = function (event, pos, item) {
+                        plot.unhighlight();
+                        if (item) {
+                            plot.highlight(item.series, item.datapoint);
+                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
+                            drawMiniPlot(currentIntervals);
+                        }
+                    }
+            
+            myHandler = function(d){
+                    a = eval(d);
+                    currentSessionIntervals = a;
+                    secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
+                    //                    alert(secondLine);
+                    plot = $.plot($("#placeholder"),
+                    [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}], options); 
+                    
+                    updateSelection(selectionStart, selectionEnd);
+                    
+                    $("#placeholder").bind("plotclick", myPlotBinding);
+                    d = null;
+                    
+                }
+                
+                
             function update() {
                 var csId = "#sessionTr" + $("#selectedSessionId").html();
                 $(".sessionTrClass").css("color","white");
                 $(csId).css("color","yellow");
 
                 
-                var p = $.get("test?sessionId="+$("#selectedSessionId").html() ,function(d){
-                    a = eval(d);
-                    secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
-                    //                    alert(secondLine);
-                    plot = $.plot($("#placeholder"),
-                    [   {data: a, 
-                            lines: {show:true}},
-
-                        {data: secondLine, points :{show: true}, lines: {show:false}}], options); 
-                    
-                    
-                    $("#placeholder").bind("plotclick", function (event, pos, item) {
-                        plot.unhighlight();
-                        if (item) {
-                            plot.highlight(item.series, item.datapoint);
-                            plot.setSelection({ xaxis: { from: item.datapoint[0], to: item.datapoint[0] + 1000*60*intervalMinutes } });
-                            selectionStart = item.datapoint[0];
-                            selectionEnd = item.datapoint[0] + 1000*60*intervalMinutes;
-                            drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, a));
-                        }
-                    });
-
-                    
-                });
+                var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
                     
                 if ($("#selectedSessionStatus").html() == "1"){
                     setTimeout(update, updateInterval);
                 }
             }
+            
+            
+            
             //            });
         </script>
     </h:head>
@@ -128,31 +202,31 @@
                         <div class="container">
                             <ul class="nav">
                                 <li>
-                                    <a href="index.html">
+                                    <a href="javascript:void()">
                                         Dashboard <span class="label label-important">7</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/messages.html">
+                                    <a href="javascript:void()">
                                         Messages <span class="label label-important">+3</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/orders.html">
+                                    <a href="javascript:void()">
                                         Orders <span class="label label-important">+21</span>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/faq.html">
+                                    <a href="javascript:void()">
                                         FAQ
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="http://wbpreview.com/previews/WB0391302/components.html">
+                                    <a href="javascript:void()">
                                         Components
                                     </a>
                                 </li>
@@ -166,12 +240,6 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
                                     <ul class="dropdown-menu">
                                         <li><a href="#">Profile</a></li>
-                                        <!--                                        <li class="divider"></li>-->
-                                        <!--                                        <li><a href="#">Sign</a></li>
-                                                                                <li><a href="#">Registration</a></li>
-                                                                                <li class="divider"></li>
-                                                                                <li><a href="#">Editor</a></li>
-                                                                                <li><a href="#">Error</a></li>-->
                                         <li class="divider"></li>
                                         <li><a href="#" >
                                                 <h:form>
@@ -201,25 +269,8 @@
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;"></div>
 
                                 <div class="statistics-items">
-                                    <ul class="unstyled">
-                                        <li class="pull-left span2">
-                                            <span class="stat-title">
-                                                Состояние
-                                            </span>
-                                            <span class="stat-num" id="state">
-                                                26.06 <span class="stat-percent minus-percent">(-30%)</span>
-                                            </span>
-                                        </li>
-                                        <li class="pull-left span2">
-                                            <span class="stat-title">
-                                                Стресс
-                                            </span>
-                                            <span class="stat-num">
-                                                80.00 <span class="stat-percent plus-percent">(80%)</span>
-                                            </span>
-                                        </li>
+                                    <h3> Выберите интервал для анализа (нажмите на красную точку)</h3>
 
-                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -288,14 +339,69 @@
                             <div class="well well-w-top">
                                 <div class="well-con height">
                                     <div class="top-well">
-                                        <h1><i class="s-icon s-icon-capacity"></i>Показатели (TODO)</h1>
+                                        <h1>Показатели | <a href="javascript: void();" onclick=" nextSelection();"> next 5 min. interval</a></h1>
                                     </div>
                                     <div id="miniPlaceholder" style="display: block; width: 100%; height:200px;">
 
                                     </div>
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Спектральный анализ</h1>
+                                        </div>
+                                        <div id="spectrumPlaceholder" style="width: 100%; height: 150px;">
 
+                                        </div>
 
+                                        <span class="stat-title">TP (Общая мощность спектра): 
+                                            <span class="stat-num plus-percent" id="tp_span"></span>
 
+                                        </span>
+                                        <span class="stat-title">ИЦ(Индекс централизации):
+                                            <span class="stat-num plus-percent" id="ic_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span3 well-con well">
+                                        <div class="top-well">
+                                            <h1>Вариационная пульсометрия</h1>
+                                        </div>
+
+                                        <span class="stat-title">ИН (Индекс напряжения): 
+                                            <span class="stat-num plus-percent" id="in_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">ВР (Вариационный размах):
+                                            <span class="stat-num plus-percent" id="bp_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">AMo (Ампитуда моды):
+                                            <span class="stat-num plus-percent" id="amo_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Статистический анализ</h1>
+                                        </div>
+
+                                        <span class="stat-title">RRNN (Среднее значение): 
+                                            <span class="stat-num plus-percent" id="rrnn_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">SDNN (средн. квадр. откл.):
+                                            <span class="stat-num plus-percent" id="sdnn_span"></span>
+                                        </span>
+                                    </span>
+
+                                    <span class="span3 well-con well">
+                                        <div class="top-well">
+                                            <h1>Временной анализ</h1>
+                                        </div>
+
+                                        <span class="stat-title">PNN50: 
+                                            <span class="stat-num plus-percent" id="pnn50_span"></span>
+                                        </span>
+                                    </span>
 
                                 </div>
                             </div>
