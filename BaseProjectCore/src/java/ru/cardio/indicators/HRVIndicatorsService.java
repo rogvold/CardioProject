@@ -3,7 +3,9 @@
  */
 package ru.cardio.indicators;
 
+import java.util.Collections;
 import java.util.List;
+import ru.cardio.indicators.utils.Histogram;
 
 /**
  *
@@ -15,18 +17,40 @@ public class HRVIndicatorsService extends AbstractIndicatorsService {
         super(intervals);
     }
 
+    public HRVIndicatorsService() {
+    }
+
+    
+    
     public double getAMoPercents() {
-        //TODO: implment =)
-        return 0;
+        List<Integer> list = getIntervalsInDuration();
+        Histogram h = new Histogram(list.size()).init();
+        for (Integer interval : list) {
+            h.addRRInterval(interval);
+        }
+        int maxRangeValue = h.getMaxIntervalNumber();
+        int totalCount = h.getTotalCount();
+        return Math.floor((maxRangeValue / (double) totalCount) * 10000) / 100.0;
     }
 
     public double getIN() {
-        //TODO: implment =)  
-        return 0;
+        double bp = getBP();
+        double amo = getAMoPercents();
+        double mo = getMo();
+        return Math.floor((amo * 1000* 1000 / (2 * bp * mo))  * 100 ) / 100.0;
     }
 
     public double getBP() {
-        //TODO: implment =)
-        return 0;
+        List<Integer> list = getIntervalsInDuration();
+        return (Collections.max(list) - Collections.min(list));
+    }
+
+    public double getMo() {
+        List<Integer> list = getIntervalsInDuration();
+        Histogram h = new Histogram(list.size()).init();
+        for (Integer interval : list) {
+            h.addRRInterval(interval);
+        }
+        return h.getMaxIntervalStart();
     }
 }

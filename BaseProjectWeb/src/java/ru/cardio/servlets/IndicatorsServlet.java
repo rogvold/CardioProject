@@ -1,19 +1,20 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ru.cardio.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
+import ru.cardio.core.managers.IndicatorsManagerLocal;
 import ru.cardio.indicators.HRVIndicatorsService;
 import ru.cardio.indicators.SpectrumIndicatorsService;
 import ru.cardio.indicators.StatisticsIndicatorsService;
@@ -26,6 +27,9 @@ import ru.cardio.indicators.TimeIndicatorsService;
 @WebServlet(name = "indicators", urlPatterns = {"/indicators"})
 public class IndicatorsServlet extends HttpServlet {
 
+    @EJB
+    IndicatorsManagerLocal indMan;
+    
     private final static String INTERVALS_FIELD = "intervals";
     private List<Integer> intervals;
 
@@ -39,36 +43,37 @@ public class IndicatorsServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    private String getJsonIndicators() {
+    private String getJsonIndicators() throws Exception {
         JSONObject obj = new JSONObject();
 
         TimeIndicatorsService tis = new TimeIndicatorsService(intervals);
         obj.put("PNN50", tis.getPNN50());
 
         StatisticsIndicatorsService stis = new StatisticsIndicatorsService(intervals);
-        obj.put("RRNN",stis.getRRNN());
+        obj.put("RRNN", stis.getRRNN());
         obj.put("SDNN", stis.getSDNN());
 
         SpectrumIndicatorsService spis = new SpectrumIndicatorsService(intervals);
-        obj.put("TP",spis.getTP());
-        obj.put("IC",spis.getIC());
-        obj.put("HFPercents",spis.getHFPercents());
-        obj.put("LFPercents",spis.getLFPercents());
-        obj.put("VLFPercents",spis.getVLFPercents());
-        obj.put("ULFPercents",spis.getULFPercents());
-        
+        obj.put("TP", spis.getTP());
+        obj.put("IC", spis.getIC());
+        obj.put("HFPercents", spis.getHFPercents());
+        obj.put("LFPercents", spis.getLFPercents());
+        obj.put("VLFPercents", spis.getVLFPercents());
+        obj.put("ULFPercents", spis.getULFPercents());
+
         HRVIndicatorsService hrvis = new HRVIndicatorsService(intervals);
-        obj.put("AMoPercents",hrvis.getAMoPercents());
-        obj.put("IN",hrvis.getIN());
-        obj.put("BP",hrvis.getBP());
+        obj.put("AMoPercents", hrvis.getAMoPercents());
+        obj.put("IN", hrvis.getIN());
+        obj.put("BP", hrvis.getBP());
+
+//        System.out.println("testing myplot ejb ; : " + indMan.getPlotOfParameters(251L, stis, "RRNN", 30000).getJsonString() );
         
-
-
+        
         return obj.toJSONString();
     }
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, Exception {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
@@ -103,7 +108,11 @@ public class IndicatorsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (Exception ex) {
+            Logger.getLogger(IndicatorsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -118,7 +127,11 @@ public class IndicatorsServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (Exception ex) {
+            Logger.getLogger(IndicatorsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

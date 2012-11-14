@@ -121,7 +121,7 @@
                     $("#ic_span").html(json.IC);
                     $("#in_span").html(json.IN);
                     $("#bp_span").html(json.BP);
-                    $("#amo_span").html(json.AMoPercents);
+                    $("#amo_span").html(json.AMoPercents + " %");
                     $("#rrnn_span").html(json.RRNN);
                     $("#sdnn_span").html(json.SDNN);
                     $("#pnn50_span").html(json.PNN50);
@@ -168,6 +168,7 @@
             
             myPlotBinding = function (event, pos, item) {
                 plot.unhighlight();
+                pausePlayerButton();
                 if (item) {
                     plot.highlight(item.series, item.datapoint);
                     updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
@@ -202,9 +203,9 @@
               
             function processLoadingsAmount(){
                 loadingsAmount = loadingsAmount + 1;
-                if (loadingsAmount == CRITICAL_LOADINGS_AMOUNT){
-                    window.location = window.location;
-                    //                    alert('!!!');
+                $("#loadings").html(loadingsAmount);
+                if (loadingsAmount &gt;= CRITICAL_LOADINGS_AMOUNT){
+                    document.location.reload(true);
                 }
             }  
                 
@@ -218,6 +219,7 @@
             
             function updatePlayerButtonStatus(){
                 paused = !paused;
+                plot.unhighlight();
                 if (paused) {
                     $("#play").css("display", "inline-block");
                     $("#pause").css("display", "none");
@@ -227,6 +229,12 @@
                 }
                 update();
             }
+            
+            function pausePlayerButton(){
+                paused = true;
+                $("#play").css("display", "inline-block");
+                $("#pause").css("display", "none");
+            }
                 
             function update() {
                 updatePlayerButton();
@@ -234,14 +242,24 @@
                 var csId = "#sessionTr" + $("#selectedSessionId").html();
                 $(".sessionTrClass").css("color","white");
                 $(csId).css("color","yellow");
-
-//                if (!paused){
-                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
-//                }
-                    
-                if ( ($("#selectedSessionStatus").html() == "1" ) &amp;&amp; (!paused)){
-                    setTimeout(update, updateInterval);
+                var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
+                // если мы смотри текущую загрузку
+                if (($("#selectedSessionStatus").html() == "1" )){
+                    if (!paused){
+                        
+                        setTimeout(update, updateInterval);
+                    }
+                } else{
+                    //                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
                 }
+
+                //                if (!paused){
+                //                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
+                ////                }
+                //                    
+                //                if ( ($("#selectedSessionStatus").html() == "1" ) &amp;&amp; (!paused)){
+                //                    setTimeout(update, updateInterval);
+                //                }
             }
             
             
@@ -383,6 +401,9 @@
                                                                     <ppctu:commandLink update="callbackSpan" oncomplete="update();" process="@this"   actionListener="#{cardioSessionBean.changeSelectedSession(csId)}">
                                                                         View
                                                                     </ppctu:commandLink>
+                                                                    <a target="_blank" href="#{request.contextPath}/faces/charts.xhtml?id=#{csId}">
+                                                                        More
+                                                                    </a>
                                                                 </h:form>
                                                             </a>
                                                             <!--                                                            | 
@@ -481,6 +502,7 @@
                 <div class="container">
                     <div class="copyright">
                         Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
+                        loadings = <span id="loadings"></span>
                     </div>
                 </div>
             </div>

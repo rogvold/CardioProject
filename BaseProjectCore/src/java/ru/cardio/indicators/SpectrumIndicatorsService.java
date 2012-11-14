@@ -16,6 +16,11 @@ public class SpectrumIndicatorsService extends AbstractIndicatorsService {
         super(intervals);
     }
 
+    public SpectrumIndicatorsService() {
+    }
+
+    
+    
     public double getHFPercents() {
         //TODO: implement =)
         return 20;
