@@ -275,14 +275,14 @@
                         <div class="container">
                             <ul class="nav">
                                 <li>
-                                    <a href="javascript:void()">
-                                        Dashboard <span class="label label-important">7</span>
+                                    <a href="#{request.contextPath}/faces/index.xhtml">
+                                        Dashboard
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="javascript:void()">
-                                        Messages <span class="label label-important">+3</span>
+                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
+                                        Сессии
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -311,6 +311,10 @@
                             <ul class="nav pull-right">
                                 <li>
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
+
+                                    <!--                                    <a href="#" >-->
+
+                                    <!--                                    </a>-->
                                     <ul class="dropdown-menu">
                                         <li><a href="#">Profile</a></li>
                                         <li class="divider"></li>
@@ -323,6 +327,9 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <h:form style="position: absolute; right: -50px; top:8px;">
+                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                </h:form>
                             </ul>
                         </div>
                     </div>
@@ -359,7 +366,7 @@
                     <div class="row">
                         <div class="span3">
                             <div class="well well-w-top">
-                                <div class="well-con height" style="overflow-y: auto; max-height: 410px;">
+                                <div class="well-con height" style="overflow-y: auto; max-height: 520px;">
                                     <div class="top-well">
                                         <h1><i class="s-icon s-icon-posts"></i>Мои сессии</h1>
                                     </div>
@@ -375,33 +382,32 @@
                                                     <th></th>
                                                 </tr></thead>
                                             <tbody>
-                                                <c:forEach var="csId" items="#{cardioSessionBean.userCardioSessions}">
-                                                    <tr id="sessionTr#{csId}" class="sessionTrClass">
-<!--                                                        <td>#{csId}</td>-->
+                                                <c:forEach var="cs" items="#{cardioSessionBean.userCardioSessions}">
+                                                    <tr id="sessionTr#{cs.id}" class="sessionTrClass" title="#{cs.description}">
                                                         <td>
-                                                            <h:outputText value="#{cardioSessionBean.startDateBySessionId(csId)}">
+                                                            <h:outputText value="#{cs.startDate}">
                                                                 <f:convertDateTime timeZone="GMT+4" pattern="dd.MM.YYYY в HH.mm" />
                                                             </h:outputText>
                                                         </td>
-<!--                                                        <td><span class="price">#{cardioSessionBean.amountOfRatesById(csId)}</span></td>-->
 
-                                                        <td>#{cardioSessionBean.prettyDurationBySessionId(csId)}</td>   
+
+                                                        <td>#{cardioSessionBean.prettyDurationBySessionId(cs.id)}</td>   
 
                                                         <td>
-                                                            <c:if test="#{cardioSessionBean.statusBySessionId(csId) == 1}" >
+                                                            <c:if test="#{cs.status == 1}" >
                                                                 <span class="price">Current</span>
                                                             </c:if>
-                                                            <c:if test="#{cardioSessionBean.statusBySessionId(csId) == 0}" >
+                                                            <c:if test="#{cs.status == 0}" >
                                                                 <span class="minus-percent">Old</span>
                                                             </c:if>
                                                         </td>   
                                                         <td class="align-right">
                                                             <a href="#">
                                                                 <h:form style="display: inline-block;">
-                                                                    <ppctu:commandLink update="callbackSpan" oncomplete="update();" process="@this"   actionListener="#{cardioSessionBean.changeSelectedSession(csId)}">
+                                                                    <ppctu:commandLink update="callbackSpan" oncomplete="update();" process="@this"   actionListener="#{cardioSessionBean.changeSelectedSession(cs.id)}">
                                                                         View
                                                                     </ppctu:commandLink>
-                                                                    <a target="_blank" href="#{request.contextPath}/faces/charts.xhtml?id=#{csId}">
+                                                                    <a target="_blank" href="#{request.contextPath}/faces/charts.xhtml?id=#{cs.id}">
                                                                         More
                                                                     </a>
                                                                 </h:form>

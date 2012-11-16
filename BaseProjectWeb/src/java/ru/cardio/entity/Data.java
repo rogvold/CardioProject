@@ -1,9 +1,7 @@
 package ru.cardio.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import ru.cardio.core.jpa.entity.Rate;
 
 /**
  *
@@ -15,8 +13,19 @@ public class Data {
     private Date start;
     private String id;
     private String password;
+    private String email;
     private boolean shouldCreateSession;
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    
+    
     public String getPassword() {
         return password;
     }

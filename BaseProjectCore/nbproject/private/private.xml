@@ -3,9 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
         <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/StatisticsIndicatorsService.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/HRVIndicatorsService.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/TimeIndicatorsService.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/IndicatorsManager.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/utils/JsonUtils.java</file>
         <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/AbstractIndicatorsService.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/Histogram.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/IndicatorsManagerLocal.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/CardioSessionManager.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/CardioSessionManagerLocal.java</file>
     </open-files>
 </project-private>

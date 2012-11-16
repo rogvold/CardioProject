@@ -23,17 +23,44 @@
                 yaxis: { color: '#92d5ea' },
                 xaxis: { mode: "time", color: '#92d5ea'}
             };
-            
+
+            $(function(){
+                if (#{chartsBean.plotHRVJsonString("IN") == ""}){
+                    alert("не достаточно данных");
+                    window.location.href = '#{request.contextPath}/faces/index.xhtml';
+                    return;
+                }
+                plotINData();
+                plotAMoPercentsData();
+                plotPNN50PercentsData();
+                plotBPData();
+                plotRRNNData();
+            })
+
+
             function plotINData(){
                 json = JSON.parse('#{chartsBean.plotHRVJsonString("IN")}');
+                if (json == null) alert('не достаточно данных');
                 data = eval(json.data);
                 $.plot("#placeholder_IN", [data] , options);
+            }
+            
+            function plotBPData(){
+                json = JSON.parse('#{chartsBean.plotHRVJsonString("BP")}');
+                data = eval(json.data);
+                $.plot("#placeholder_BP", [data] , options);
             }
             
             function plotAMoPercentsData(){
                 json = JSON.parse('#{chartsBean.plotHRVJsonString("AMoPercents")}');
                 data = eval(json.data);
                 $.plot("#placeholder_AMoPercents", [data] , options);
+            }
+            
+            function plotRRNNData(){
+                json = JSON.parse('#{chartsBean.plotStisJsonString("RRNN")}');
+                data = eval(json.data);
+                $.plot("#placeholder_RRNN", [data] , options);
             }
             
             function plotPNN50PercentsData(){
@@ -51,11 +78,7 @@
             }
 
             
-            $(function(){
-                plotINData();
-                plotAMoPercentsData();
-                plotPNN50PercentsData();
-            })
+
             
         </script>
     </h:head>
@@ -68,14 +91,14 @@
                         <div class="container">
                             <ul class="nav">
                                 <li>
-                                    <a href="javascript:void()">
-                                        Dashboard <span class="label label-important">7</span>
+                                    <a href="#{request.contextPath}/faces/index.xhtml">
+                                        Dashboard
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="javascript:void()">
-                                        Messages <span class="label label-important">+3</span>
+                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
+                                        Сессии
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -116,6 +139,9 @@
                                         </li>
                                     </ul>
                                 </li>
+                                <h:form style="position: absolute; right: -50px; top:8px;">
+                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                </h:form>
                             </ul>
                         </div>
                     </div>
@@ -146,6 +172,16 @@
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
                                 </div>
 
+                                <h1 id="BP_h1">BP (Вариационный размах)</h1>
+                                <div id="placeholder_BP" style="width: 100%;
+                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
+                                </div>
+
+                                <h1 id="RRNN_h1">RRNN (Среднее значение)</h1>
+                                <div id="placeholder_RRNN" style="width: 100%;
+                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
+                                </div>
+
 
                                 <!--                                <div class="statistics-items">
                                                                     <span style="color:#A5AAB0; font-size: 16px;" class="span8"> Выберите интервал для анализа (нажмите на красную точку)</span>
@@ -173,7 +209,7 @@
                 <div class="container">
                     <div class="copyright">
                         Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
-                        loadings = <span id="loadings"></span>
+
                     </div>
                 </div>
             </div>

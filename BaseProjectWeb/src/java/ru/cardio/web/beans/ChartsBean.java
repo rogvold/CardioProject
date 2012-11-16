@@ -12,7 +12,9 @@ import javax.faces.context.FacesContext;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.core.managers.IndicatorsManagerLocal;
+import ru.cardio.graphics.MyPlot;
 import ru.cardio.indicators.HRVIndicatorsService;
+import ru.cardio.indicators.StatisticsIndicatorsService;
 import ru.cardio.indicators.TimeIndicatorsService;
 
 /**
@@ -47,11 +49,19 @@ public class ChartsBean {
 
     public String plotHRVJsonString(String paramName) throws Exception {
         System.out.println("paramName = " + paramName);
-        return indMan.getPlotOfParameters(sessionId, new HRVIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000).getJsonString();
+        MyPlot plot = indMan.getPlotOfParameters(sessionId, new HRVIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
+        return plot == null ? "" : plot.getJsonString();
     }
 
     public String plotTISJsonString(String paramName) throws Exception {
         System.out.println("paramName = " + paramName);
-        return indMan.getPlotOfParameters(sessionId, new TimeIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000).getJsonString();
+        MyPlot plot = indMan.getPlotOfParameters(sessionId, new TimeIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
+        return plot == null ? "" : plot.getJsonString();
+    }
+
+    public String plotStisJsonString(String paramName) throws Exception {
+        System.out.println("paramName = " + paramName);
+        MyPlot plot = indMan.getPlotOfParameters(sessionId, new StatisticsIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
+        return plot == null ? "" : plot.getJsonString();
     }
 }

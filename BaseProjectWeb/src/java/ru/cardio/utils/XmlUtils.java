@@ -24,15 +24,13 @@ public class XmlUtils {
     public static final String JSON_FIELD_RATES = "rates";
     public static final String JSON_FIELD_START = "start";
     public static final String JSON_FIELD_ID = "id";
+    public static final String JSON_FIELD_EMAIL = "email";
     public static final String JSON_CREATE_SESSION = "create";
     public static final String JSON_FIELD_PASSWORD = "password";
     public static final String DATE_MASK = "yyyy-MM-dd HH:mm:ss.SSS";
-    
     public static final String JSON_CREATE_SESSION_VALUE_TRUE = "1";
     public static final String JSON_CREATE_SESSION_VALUE_FALSE = "0";
 
-    
-    
     public static Data dataFromXML(String xml) {
         XStream xs = new XStream();
         xs.registerConverter(new DateConverter());
@@ -77,11 +75,12 @@ public class XmlUtils {
         dat.setStart(start);
         dat.setRates(nrates);
         dat.setId(jsonObj.get(XmlUtils.JSON_FIELD_ID).toString());
+        dat.setEmail(jsonObj.get(XmlUtils.JSON_FIELD_EMAIL).toString());
         dat.setPassword(jsonObj.get(XmlUtils.JSON_FIELD_PASSWORD).toString());
-        
+
         String createSession = jsonObj.get(XmlUtils.JSON_CREATE_SESSION).toString();
         dat.setShouldCreateSession(createSession.equals(XmlUtils.JSON_CREATE_SESSION_VALUE_TRUE) ? true : false);
-        
+
         return dat;
     }
 }

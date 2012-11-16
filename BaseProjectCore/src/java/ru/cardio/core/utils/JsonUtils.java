@@ -10,6 +10,7 @@ import ru.cardio.graphics.MyPoint;
 public class JsonUtils {
 
     public static String getPlotData(List<MyPoint> points) {
+        if ((points == null) || (points.isEmpty())) return null;
         String s = "[";
         for (int i = 0; i < points.size() - 1; i++) {
             MyPoint r = points.get(i);

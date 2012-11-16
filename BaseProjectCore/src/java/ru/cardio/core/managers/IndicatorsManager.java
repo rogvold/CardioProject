@@ -21,7 +21,9 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
 
     @Override
     public MyPlot getPlotOfParameters(Long sessionId, AbstractIndicatorsService a, String indicatorName, long msStep) throws Exception {
-        if (sessionId == null) return null;
+        if (sessionId == null) {
+            return null;
+        }
         List<Rate> rates = cardMan.getRatesInCardioSession(sessionId, -1);
         List<MyPoint> points = new ArrayList();
 
@@ -30,20 +32,25 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
         int beginIndex = 0;
         int sum = 0;
         for (int i = 0; i < rates.size(); i++) {
+            beginIndex = i;
             if (sum >= a.getDuration()) {
-                beginIndex = i;
                 break;
             }
             sum += rates.get(i).getDuration();
         }
 
-        System.out.println("beginIndes = " + beginIndex);
-
+        System.out.println("beginIndex = " + beginIndex);
+        if (beginIndex == rates.size() - 1){
+            System.out.println("not enough data...");
+            return null;
+        }
+        
+        
         int curr = beginIndex;
-        int prev = 0;
+        int prev = 0;//not right
         List<Integer> list = new ArrayList();
 
-        while (curr < rates.size() - 1) {
+        while (curr < rates.size()) {
             list.clear();
             for (int i = prev; i < curr; i++) {
                 list.add(rates.get(i).getDuration());
@@ -73,24 +80,22 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
 
     private List<AbstractIndicatorsService> getAllAvailableIndicatorServices() {
         List<AbstractIndicatorsService> list = new ArrayList();
-        
+
         list.add(new TimeIndicatorsService());
         list.add(new StatisticsIndicatorsService());
         list.add(new SpectrumIndicatorsService());
         list.add(new HRVIndicatorsService());
-        
+
         return list;
     }
-    
-    
 
     @Override
     public List<MyPlot> getAllImplementedParametersPlots(Long sessionId, long msStep) throws Exception {
         List<AbstractIndicatorsService> servicesInstances = getAllAvailableIndicatorServices();
         List<MyPlot> list = new ArrayList();
-        for (AbstractIndicatorsService ais : servicesInstances){
+        for (AbstractIndicatorsService ais : servicesInstances) {
             List<String> names = ais.allParametersNames();
-            for (String s: names){
+            for (String s : names) {
                 list.add(getPlotOfParameters(sessionId, ais, s, msStep));
             }
         }
@@ -101,7 +106,7 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
     public String getJsonOfAllImplementedParametersPlots(Long sessionId, long msStep) throws Exception {
         List<MyPlot> allPlots = getAllImplementedParametersPlots(sessionId, msStep);
         // TODO: implement
-        
+
         return null;
     }
 }

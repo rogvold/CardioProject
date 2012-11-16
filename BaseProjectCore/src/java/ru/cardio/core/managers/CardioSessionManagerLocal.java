@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.core.managers;
 
 import java.util.Date;
@@ -28,6 +24,8 @@ public interface CardioSessionManagerLocal {
     public CardioSession getCardioSessionById(Long sessionId);
 
     public List<Long> getUserCardioSessionsId(Long userId);
+    
+    public List<CardioSession> getUserCardioSessions(Long userId);
 
     public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate);
 
@@ -40,8 +38,13 @@ public interface CardioSessionManagerLocal {
 
     public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password);
     
+    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password);
+    
     public int getSessionRatesAmountById(Long sessionId);
     public Long getSessionDurationById(Long sessionId);
     public Date getSessionStartDateById(Long sessionId);
     public int getSessionStatusById(Long sessionId);
+    
+    public void updateSessionDescription(Long sessionId, String newDescription);
+    public boolean deleteSession(Long sessionId);
 }

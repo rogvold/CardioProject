@@ -11,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import ru.cardio.core.entity.Rate;
 import ru.cardio.core.jpa.entity.CardioSession;
+import ru.cardio.core.jpa.entity.User;
 import ru.cardio.core.utils.CardioUtils;
 
 /**
@@ -259,5 +260,46 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
     public int getSessionStatusById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
         return (cs == null) ? null : cs.getStatus();
+    }
+
+    @Override
+    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password) {
+        User u = userMan.getUserByEmail(email);
+        addRates(u.getId(), ratesList, startDate, createSession, password);
+    }
+
+    @Override
+    public void updateSessionDescription(Long sessionId, String newDescription) {
+        try {
+            CardioSession cs = em.find(CardioSession.class, sessionId);
+            cs.setDescription(newDescription);
+            em.merge(cs);
+        } catch (Exception e) {
+            System.out.println("exception occured: exc = " + e.toString());
+        }
+    }
+
+    @Override
+    public List<CardioSession> getUserCardioSessions(Long userId) {
+        try {
+            Query q = em.createQuery("select c from CardioSession c where c.userId=:id order by c.startDate desc").setParameter("id", userId);
+            return q.getResultList();
+        } catch (Exception e) {
+            System.out.println("getUserCardioSessions(usrId  = " + userId + ") : exc = " + e.toString());
+            return null;
+        }
+
+    }
+
+    @Override
+    public boolean deleteSession(Long sessionId) {
+        try {
+            CardioSession cs = getCardioSessionById(sessionId);
+            em.remove(cs);
+            return true;
+        } catch (Exception e) {
+            System.out.println("deleteSession( sessionId = "+sessionId+"): exc =  " + e.toString());
+            return false;
+        }
     }
 }

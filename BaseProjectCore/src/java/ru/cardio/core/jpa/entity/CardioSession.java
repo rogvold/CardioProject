@@ -37,6 +37,8 @@ public class CardioSession implements Serializable {
     @Column
     private int status;
     
+    @Column
+    private String description;
     
     public Long getId() {
         return id;
@@ -46,6 +48,16 @@ public class CardioSession implements Serializable {
         this.id = id;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    
+    
     public int getStatus() {
         return status;
     }

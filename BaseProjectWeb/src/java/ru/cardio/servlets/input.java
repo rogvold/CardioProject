@@ -43,10 +43,7 @@ public class input extends HttpServlet {
             String json = request.getParameter("json");
             System.out.println("servlet: json = " + json);
             Data d = XmlUtils.simpleDataFromJson(json);
-            sm.addRates(Long.parseLong(d.getId()), d.getRates(), d.getStart(), d.isShouldCreateSession() , d.getPassword());
-            
-//            rm.addRates(d.getRates());
-
+            sm.addRates(d.getEmail(), d.getRates(), d.getStart(), d.isShouldCreateSession() , d.getPassword());
             out.println(d);
 
         } finally {
