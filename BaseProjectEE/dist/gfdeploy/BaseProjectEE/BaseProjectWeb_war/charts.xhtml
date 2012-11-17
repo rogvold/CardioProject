@@ -10,6 +10,7 @@
         <link href="../css/bootstrap.css" rel="stylesheet" />
         <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
         <link href="../css/Common.css" rel="stylesheet" />
+        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
         <script src="./js/jquery.min.js"></script>
         <script src="../js/jquery.flot.js"></script>
         <script src="./js/jquery.flot.selection.js"></script>
@@ -92,7 +93,10 @@
                             <ul class="nav">
                                 <li>
                                     <a href="#{request.contextPath}/faces/index.xhtml">
-                                        Dashboard
+                                        Dashboard 
+                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
+                                            <span class="badge badge-success">!</span>
+                                        </c:if>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -103,8 +107,8 @@
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="javascript:void()">
-                                        Orders <span class="label label-important">+21</span>
+                                    <a href="#{request.contextPath}/faces/card.xhtml">
+                                        Карточка
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>

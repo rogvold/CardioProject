@@ -302,4 +302,10 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return false;
         }
     }
+
+    @Override
+    public boolean userHasActiveSession(Long userId) {
+        Long l = getCurrentCardioSessionId(userId);
+        return l == null ? false : true;
+    }
 }

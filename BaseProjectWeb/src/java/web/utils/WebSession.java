@@ -1,10 +1,12 @@
 package web.utils;
 
+import java.io.IOException;
 import java.io.Serializable;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
 import ru.cardio.core.managers.UserManagerLocal;
@@ -17,6 +19,7 @@ import ru.cardio.core.managers.UserManagerLocal;
 @SessionScoped
 public class WebSession implements Serializable {
 
+    private static final String LOGIN_REDIRECT_URL = "/BaseProjectWeb/faces/login.xhtml";
     private transient HttpSession session = null;
     private boolean registered;
     @EJB
@@ -33,6 +36,15 @@ public class WebSession implements Serializable {
         registered = userMan.userExistsById(getUserId());
     }
 
+    public void loginRedirect() throws IOException {
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if (!isSignedIn()) {
+            ExternalContext ext = fc.getExternalContext();
+            
+            ext.redirect(LOGIN_REDIRECT_URL);
+        }
+    }
+
     public boolean isRegistered() {
         return registered;
     }
@@ -41,7 +53,7 @@ public class WebSession implements Serializable {
         this.registered = registered;
     }
 
-    public Long getUserId(){
+    public Long getUserId() {
         return SessionUtils.getUserId();
     }
 

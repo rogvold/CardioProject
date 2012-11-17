@@ -47,4 +47,6 @@ public interface CardioSessionManagerLocal {
     
     public void updateSessionDescription(Long sessionId, String newDescription);
     public boolean deleteSession(Long sessionId);
+    
+    public boolean userHasActiveSession(Long userId);
 }

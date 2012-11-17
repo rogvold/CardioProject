@@ -125,4 +125,9 @@ public class CardioSessionBean implements Serializable {
             this.userCardioSessions.remove(del);
         }
     }
+    
+    public boolean hasActiveSession(Long userId){
+        return sm.userHasActiveSession(userId);
+    }
+    
 }

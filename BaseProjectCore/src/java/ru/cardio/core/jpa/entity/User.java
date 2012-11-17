@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.core.jpa.entity;
 
 import java.io.Serializable;
@@ -31,6 +27,8 @@ public class User implements Serializable {
     @Column
     private String lastName;
     
+//    @Column
+//    private UserCard card;
     
     
     public Long getId() {
@@ -41,6 +39,8 @@ public class User implements Serializable {
         this.id = id;
     }
 
+    
+    
     public String getFirstName() {
         return firstName;
     }

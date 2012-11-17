@@ -10,255 +10,13 @@
         <link href="../css/bootstrap.css" rel="stylesheet" />
         <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
         <link href="../css/Common.css" rel="stylesheet" />
+
+        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
+
         <script src="./js/jquery.min.js"></script>
         <script src="../js/jquery.flot.js"></script>
         <script src="./js/jquery.flot.selection.js"></script>
         <script src="./js/jquery.flot.pie.js"></script>
-        <!--        <script src="./js/jquery.js"></script>-->
-
-        <!--        <script type="text/javascript">
-                    
-                    var updateInterval = 5000;
-                    var CRITICAL_LOADINGS_AMOUNT = 15;
-                    var plot;
-                    var intervalMinutes = 5;
-                    var options = {
-                        series: { shadowSize: 0, color : '#CC3300'},
-                        yaxis: { color: '#92d5ea' },
-                        xaxis: { mode: "time", color: '#92d5ea'},
-                        selection: { mode: "x" },
-                        grid: { hoverable: true, clickable: true } 
-                    };
-                    var optionsMini = {
-                        series: { shadowSize: 0, color : '#CF3300'},
-                        yaxis: { color: '#92d5ea' },
-                        xaxis: { mode: "time", color: '#92d5ea'}
-                    };
-                    
-        
-                    var selectionStart = 0;
-                    var selectionEnd = 0;
-                    var interval = 1000*60* intervalMinutes;
-                    var secondLine = [];
-                    var currentIntervals = [];
-                    var currentSessionIntervals = [];
-                    var myData = [];
-                    var rendered = false;
-                    
-                    var paused = false;
-                    var pausedButtonRendered = true;
-                    
-                    var loadingsAmount = 0;
-        
-                    
-                    if (#{webSession.signedIn == false} ){ // TODO: change on f:event
-                        window.location = "login.xhtml";
-                    }
-                    
-                    $(function(){
-                        if (#{webSession.signedIn == false} ){
-                            window.location = "login.xhtml";
-                        }
-                        update();
-                    })
-                    
-                    function updatePauseButton(){
-                        
-                    }
-                    
-                    function getRequestString(ints){
-                        var s = "";
-                        for (var i = 0; i &lt; ints.length - 1; i++){
-                            s+=ints[i][1] + ",";
-                        }
-                        s += ints[ints.length - 1][1];
-                        return s;
-                    }
-        
-                    function getSelectedIntervals(start , end, intervals){
-                        var list = [];
-                        for (var i = 0; i &lt; intervals.length; i++){
-                            if ((intervals[i][0] &lt;= end ) &amp;&amp; (intervals[i][0] &gt;= start)){
-                                list.push( [ intervals[i][0] , intervals[i][1] ]);
-                            }
-                        }
-        
-                        return list;
-                    }
-        
-                    function getSelectedIntervalsValue(start , end, intervals){
-                        var list = getSelectedIntervals(start,end,intervals);
-                        list2 = [];
-                        for (var i = 0;  i &lt; list.length; i++){
-                            list2.push([list[i][1]]);
-                        }
-                                        
-                        return list2;
-                    }
-        
-                    function getTheSecondLine(start, end){
-                        var mas = [];
-                        for (var i=start; i &lt; end; i+=interval){
-                            mas.push([ i , 0]);
-                        }
-                        return mas;
-                    }
-                    
-                    function drawMiniPlot(intervals){
-                        plot2 = $.plot($("#miniPlaceholder"),
-                        [   {data: intervals, lines: {show:true}} ], optionsMini);
-                        updateIndicators(intervals);
-                    }
-                    
-                    function updateIndicators(intervals){
-                        $.ajax({
-                            type: "POST",
-                            url: "indicators",
-                            data: { intervals: getRequestString(intervals) }
-                        }).done(function( msg ) {
-                            var json = JSON.parse(msg);
-                            $("#tp_span").html(json.TP);
-                            $("#ic_span").html(json.IC);
-                            $("#in_span").html(json.IN);
-                            $("#bp_span").html(json.BP);
-                            $("#amo_span").html(json.AMoPercents + " %");
-                            $("#rrnn_span").html(json.RRNN);
-                            $("#sdnn_span").html(json.SDNN);
-                            $("#pnn50_span").html(json.PNN50);
-                            
-                            drawSpectrumChart(json.HFPercents, json.LFPercents, json.VLFPercents, json.ULFPercents );
-                            
-                        });
-                    }
-                    
-                    function drawSpectrumChart(hf, lf, vlf, ulf){
-                        var data = [];
-                        data = [{ label: "HF", data: hf }, { label: "LF", data: lf }, { label: "VLF", data: vlf }, { label: "ULF", data: ulf } ];
-        
-                        $.plot($("#spectrumPlaceholder"), data, 
-                        {
-                            series: {
-                                pie: { 
-                                    show: true
-                                    
-                                }
-                            },
-                            legend: {
-                                show: false
-                            }
-                        });
-                    }
-                    
-                    function updateSelection(start , end){
-                        plot.setSelection({ xaxis: { from: start, to: end } });
-                        selectionStart = start;
-                        selectionEnd = end;
-                        //                drawMiniPlot(getSelectedIntervals(selectionStart, selectionEnd, currentSessionIntervals));
-                    }
-                    
-                    function nextSelection(){
-                        if ( selectionStart + 1000*60*intervalMinutes &gt; currentSessionIntervals[currentSessionIntervals.length - 1][0]){
-                            updateSelection(currentSessionIntervals[0][0], currentSessionIntervals[0][0] + 1000*60*intervalMinutes);
-                            drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
-                            return;
-                        }
-                        updateSelection(selectionStart + 1000*60*intervalMinutes,  selectionEnd + 1000*60*intervalMinutes);
-                        drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
-                    }
-                    
-                    myPlotBinding = function (event, pos, item) {
-                        plot.unhighlight();
-                        pausePlayerButton();
-                        if (item) {
-                            plot.highlight(item.series, item.datapoint);
-                            updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
-                            currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
-                            drawMiniPlot(currentIntervals);
-                        }
-                    }
-                    
-                    myHandler = function(d){
-                        a = eval(d);
-                        
-                        currentSessionIntervals = a;
-                        secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
-                        //                    alert(secondLine);
-                        myData = [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
-                        
-                        if (!rendered){
-                            plot = $.plot($("#placeholder"),myData , options); 
-                            rendered = true;
-                        } else{ 
-                            plot.setData(myData);
-                            plot.setupGrid();
-                            plot.draw();
-                        }
-                            
-                        updateSelection(selectionStart, selectionEnd);
-                            
-                        $("#placeholder").bind("plotclick", myPlotBinding);
-                        d = null;
-                            
-                    }
-                      
-                    function processLoadingsAmount(){
-                        loadingsAmount = loadingsAmount + 1;
-                        $("#loadings").html(loadingsAmount);
-                        if (loadingsAmount &gt;= CRITICAL_LOADINGS_AMOUNT){
-                            document.location.reload(true);
-                        }
-                    }  
-                        
-                    function updatePlayerButton(){
-                        if ($("#selectedSessionStatus").html() == "1"){
-                            $("#player").css("display","inline-block");
-                        } else {
-                            $("#player").css("display","none");
-                        }
-                    }
-                    
-                    function updatePlayerButtonStatus(){
-                        paused = !paused;
-                        plot.unhighlight();
-                        if (paused) {
-                            $("#play").css("display", "inline-block");
-                            $("#pause").css("display", "none");
-                        } else{
-                            $("#play").css("display", "none");
-                            $("#pause").css("display", "inline-block");
-                        }
-                        update();
-                    }
-                    
-                    function pausePlayerButton(){
-                        paused = true;
-                        $("#play").css("display", "inline-block");
-                        $("#pause").css("display", "none");
-                    }
-                        
-                    function update() {
-                        //                updatePlayerButton();
-                        //                processLoadingsAmount();
-                        var csId = "#sessionTr" + $("#selectedSessionId").html();
-                        $(".sessionTrClass").css("color","white");
-                        $(csId).css("color","yellow");
-                        var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
-                        // если мы смотри текущую загрузку
-                        if (($("#selectedSessionStatus").html() == "1" )){
-                            if (!paused){
-                                
-                                setTimeout(update, updateInterval);
-                            }
-                        } else{
-                            //                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
-                        }
-        
-                    }
-                    
-                    
-                    
-                    //            });
-                </script>-->
     </h:head>
     <h:body>
         <div class="container">
@@ -269,7 +27,10 @@
                             <ul class="nav">
                                 <li>
                                     <a href="#{request.contextPath}/faces/index.xhtml">
-                                        Dashboard
+                                        Dashboard 
+                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
+                                            <span class="badge badge-success">!</span>
+                                        </c:if>
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -280,8 +41,8 @@
                                 </li>
                                 <li class="divider-vertical"></li>
                                 <li>
-                                    <a href="javascript:void()">
-                                        Orders <span class="label label-important">+21</span>
+                                    <a href="#{request.contextPath}/faces/card.xhtml">
+                                        Карточка
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -330,33 +91,6 @@
             </section>
 
             <section id="body-contnet">
-                <!--                <section id="full-width">
-                                    <div class="well well-w-top">
-                                        <div class="well-con height" >
-                                            <div class="top-well">
-                                                <h1><i class="s-icon s-icon-stat"></i>Analitic</h1>
-                                            </div>
-                                            <div class="well-content">
-                                                                                <div id="placeholder" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; position: relative; "><canvas class="base" width="1140" height="300"></canvas><canvas class="overlay" width="1140" height="300" style="position: absolute; left: 0px; top: 0px; "></canvas><div class="tickLabels" style="font-size:smaller"><div class="xAxis x1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:center;left:-11px;top:282px;width:76px">0</div><div class="tickLabel" style="position:absolute;text-align:center;left:71px;top:282px;width:76px">1</div><div class="tickLabel" style="position:absolute;text-align:center;left:153px;top:282px;width:76px">2</div><div class="tickLabel" style="position:absolute;text-align:center;left:235px;top:282px;width:76px">3</div><div class="tickLabel" style="position:absolute;text-align:center;left:318px;top:282px;width:76px">4</div><div class="tickLabel" style="position:absolute;text-align:center;left:400px;top:282px;width:76px">5</div><div class="tickLabel" style="position:absolute;text-align:center;left:482px;top:282px;width:76px">6</div><div class="tickLabel" style="position:absolute;text-align:center;left:564px;top:282px;width:76px">7</div><div class="tickLabel" style="position:absolute;text-align:center;left:646px;top:282px;width:76px">8</div><div class="tickLabel" style="position:absolute;text-align:center;left:728px;top:282px;width:76px">9</div><div class="tickLabel" style="position:absolute;text-align:center;left:810px;top:282px;width:76px">10</div><div class="tickLabel" style="position:absolute;text-align:center;left:893px;top:282px;width:76px">11</div><div class="tickLabel" style="position:absolute;text-align:center;left:975px;top:282px;width:76px">12</div><div class="tickLabel" style="position:absolute;text-align:center;left:1057px;top:282px;width:76px">13</div></div><div class="yAxis y1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:right;top:243px;right:1120px;width:20px">-1.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:187px;right:1120px;width:20px">-0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:131px;right:1120px;width:20px">0.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:74px;right:1120px;width:20px">0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:18px;right:1120px;width:20px">1.0</div></div></div></div>
-                                                <div id="placeholder" style="width: 100%;
-                                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                                    
-                                                </div>
-                
-                                                <div class="statistics-items">
-                                                    <span style="color:#A5AAB0; font-size: 16px;" class="span8"> Выберите интервал для анализа (нажмите на красную точку)</span>
-                                                    <span style="text-align: right;" class="span3">
-                                                        <span id="player" style="cursor: pointer;">
-                                                            <img src="./images/play.ico" style="width: 22px; display: none;" onclick="updatePlayerButtonStatus();" id="play" />
-                                                            <img src="./images/pause.ico" style="width: 22px; display: inline-block ;" onclick="updatePlayerButtonStatus();" id="pause" />
-                                                        </span>
-                                                    </span>
-                
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>-->
 
                 <h:panelGroup id="deletion_dialog" style="
                               text-align: center;
@@ -371,17 +105,10 @@
                     <br/>
                     <h:form style="margin-top: 20px; text-align: center;" >
                         <h:commandButton styleClass="btn btn-danger" style="margin-right: 20px;" actionListener="#{cardioSessionBean.deleteCardioSession(cardioSessionBean.deletionSessionId)}" value=" Да " />
-                        <div class="btn btn-success" onclick="$('#deletion_dialog').hide('toggle');" > Нет </div>
+                        <div class="btn btn-success" onclick="$('#deletion_dialog').hide('toggle'); window.location.href = window.location.href" > Нет </div>
                     </h:form>
                 </h:panelGroup>
 
-
-
-                <!--                <div id="dialog" title="Диалоговое окно">
-                                    
-                                    <p>Это окно диалога с заданной по умолчанию функциональностью. Окно диалога можно перемещать, изменять его размеры и закрыть, щелкнув по значку 'x'.</p>
-                                    
-                                </div>-->
 
 
                 <section id="half-width-box" style="margin-top: 50px;">
@@ -442,7 +169,7 @@
                                                         <td class="align-right">
                                                             <a href="#">
                                                                 <h:form style="display: inline-block;" prependId="false">
-                                                          
+
                                                                     <ppctu:commandLink update="deletion_dialog" 
                                                                                        style="color: #CE3636;"
                                                                                        oncomplete="$('#deletion_dialog').show('toggle');"
