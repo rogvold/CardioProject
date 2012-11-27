@@ -64,7 +64,13 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
 
     @Override
     public CardioSession getCardioSessionById(Long sessionId) {
-        return (sessionId == null) ? null : em.find(CardioSession.class, sessionId);
+        System.out.println("getCardioSessionById: sessionID = " + sessionId);
+        try {
+            return (sessionId == null) ? null : em.find(CardioSession.class, sessionId); // sorry
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     @Override
@@ -259,7 +265,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
     @Override
     public int getSessionStatusById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
-        return (cs == null) ? null : cs.getStatus();
+        return (cs == null) ? -1 : cs.getStatus();
     }
 
     @Override
@@ -298,7 +304,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             em.remove(cs);
             return true;
         } catch (Exception e) {
-            System.out.println("deleteSession( sessionId = "+sessionId+"): exc =  " + e.toString());
+            System.out.println("deleteSession( sessionId = " + sessionId + "): exc =  " + e.toString());
             return false;
         }
     }
