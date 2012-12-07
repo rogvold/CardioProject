@@ -17,10 +17,106 @@
         <script src="../js/jquery.flot.js"></script>
         <script src="./js/jquery.flot.selection.js"></script>
         <script src="./js/jquery.flot.pie.js"></script>
+        <script src="./js/jquery.flot.symbol.js"></script>
+
         <!--        <script src="./js/jquery.js"></script>-->
 
+
         <script type="text/javascript">
+            var notes;
+            var note_mode = false;
             
+            noteBinding = function (event, pos, item) {
+                duration = Math.floor( eval(pos.xaxis.to) - eval(pos.xaxis.from) );
+                start = Math.floor(  eval(pos.xaxis.from) );
+                
+                if (note_mode){
+                    $("#note_start").val(start);
+                    $("#note_duration").val(duration);
+                    $("#notePanel").show('toggle');
+                    
+                    $("#note_description").val("");
+                    $("#note_title").val("");
+                }
+
+            }            
+            function getNotesArray(){
+                var mas = [];
+                notes = eval($("#note_span").text());
+                for (var i=0; i &lt; notes.length; i++){
+                    mas.push([ notes[i][0] , 0]);
+                }
+                return mas;
+            }
+            
+            function checkNotePoint(x){
+                var b = -1;
+                for (var i = 0; i &lt; notes.length; i++){
+                    if (x == notes[i][0]) {
+                        b = i; 
+                        break;
+                    }
+                }
+                
+                return b;
+            }
+            
+            function checkboxClick(){
+                if ($("#note_checkbox").is(':checked')){
+                    note_mode = true;
+                }else{
+                    note_mode = false;
+                }
+            }
+            
+        </script>
+
+
+        <script>
+            
+            function getMin(rates){
+                var myMin = rates[0][0];
+                for (var i=1; i &lt; rates.length; i++){
+                    if (myMin  > rates[i]) myMin = rates[i][0];
+                }
+                return myMin;
+            }
+            
+            function getMax(rates){
+                var myMax = rates[0][0];
+                for (var i=1; i &lt; rates.length; i++){
+                    if (rates[i] > myMax) myMax = rates[i][0];
+                }
+                return myMax;
+            }
+            
+            function drawScaterogramma(){
+                var mas = [];
+                var rates = getSelectedIntervalsValue(selectionStart,selectionEnd, currentSessionIntervals);
+                
+                var bis = [];
+                var min = getMin(rates);
+                var max = getMax(rates);
+                bis.push([min, min]);
+                bis.push([max, max]);
+                myData = [ 
+                    {data: mas, lines: {show:false}, points: {show:true}}, 
+                    {data: bis, lines: {show:true}}
+                ];
+                
+                for (var i = 1; i &lt; rates.length; i++){
+                    mas.push([rates[i], rates[i-1]]);
+                }
+                var optionsMini = {
+                    series: { shadowSize: 0, color : '#CF3300'},
+                    yaxis: { color: '#92d5ea' },
+                    xaxis: { mode: "time", color: '#92d5ea'}
+                };
+                plot3 = $.plot($("#scaterPlaceholder"),myData);
+            }
+        </script>
+
+        <script type="text/javascript">
             var updateInterval = 5000;
             var CRITICAL_LOADINGS_AMOUNT = 15;
             var plot;
@@ -56,10 +152,9 @@
             
             
             $(function(){
-                if (#{webSession.signedIn == false} ){
-                    window.location = "login.xhtml";
-                }
+                $("#placeholder").bind("plotselected", noteBinding);
                 update();
+                
             })
             
             function updatePauseButton(){
@@ -107,7 +202,9 @@
             function drawMiniPlot(intervals){
                 plot2 = $.plot($("#miniPlaceholder"),
                 [   {data: intervals, lines: {show:true}} ], optionsMini);
+                
                 updateIndicators(intervals);
+                drawScaterogramma();
             }
             
             function updateIndicators(intervals){
@@ -166,12 +263,25 @@
                 drawMiniPlot(getSelectedIntervals(selectionStart,selectionEnd, currentSessionIntervals));
             }
             
+
+            
             myPlotBinding = function (event, pos, item) {
                 plot.unhighlight();
                 pausePlayerButton();
                 if (item) {
                     plot.highlight(item.series, item.datapoint);
-                    updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                    
+                    var t = checkNotePoint(item.datapoint[0]);
+                    if (t > -1){
+                        
+                        updateSelection(item.datapoint[0], item.datapoint[0] + notes[t][1]);
+                        $("#select_note_start").val(notes[t][0]);
+                        $("#select_note_button").click();
+                    }else{
+                        updateSelection(item.datapoint[0], item.datapoint[0] + 1000*60*intervalMinutes);
+                    }
+
+                    
                     currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
                     drawMiniPlot(currentIntervals);
                 }
@@ -182,8 +292,11 @@
                 
                 currentSessionIntervals = a;
                 secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
+                notesList = getNotesArray();
                 //                    alert(secondLine);
-                myData = [   {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
+                myData = [ 
+                    {data: notesList, color : 'green', lines: {show:false}, points: { show: true, symbol: "triangle" } }, 
+                    {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
                 
                 if (!rendered){
                     plot = $.plot($("#placeholder"),myData , options); 
@@ -240,32 +353,26 @@
                 updatePlayerButton();
                 processLoadingsAmount();
                 var csId = "#sessionTr" + $("#selectedSessionId").html();
+                
+                $("#note_selectedSessionId").val($("#selectedSessionId").html());
+                
                 $(".sessionTrClass").css("color","white");
                 $(csId).css("color","yellow");
                 var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
                 // если мы смотри текущую загрузку
                 if (($("#selectedSessionStatus").html() == "1" )){
                     if (!paused){
-                        
                         setTimeout(update, updateInterval);
                     }
                 } else{
-                    //                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
+                    
                 }
-
-                //                if (!paused){
-                //                    var p = $.get("test?sessionId="+$("#selectedSessionId").html() , myHandler);
-                ////                }
-                //                    
-                //                if ( ($("#selectedSessionStatus").html() == "1" ) &amp;&amp; (!paused)){
-                //                    setTimeout(update, updateInterval);
-                //                }
             }
-            
-            
-            
-            //            });
         </script>
+
+
+
+
     </h:head>
     <h:body>
         <div class="container">
@@ -308,9 +415,11 @@
                                 </li>
                                 <li class="divider-vertical"></li>
                             </ul>
-                            <form class="navbar-search pull-left">
-                                <input type="text" class="search-query" placeholder="Search" />
-                            </form>
+
+                            <span style="margin-top:8px; display: inline-block; ">
+                                Создание метки: <input type="checkbox" id="note_checkbox" onclick="checkboxClick();" />
+                            </span>
+
                             <ul class="nav pull-right">
                                 <li>
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
@@ -468,9 +577,9 @@
                                         <span class="stat-title">AMo (Ампитуда моды):
                                             <span class="stat-num plus-percent" id="amo_span"></span>
                                         </span>
-                                    </span>
 
-                                    <span class="span4 well-con well">
+                                        <br/>
+
                                         <div class="top-well">
                                             <h1>Статистический анализ</h1>
                                         </div>
@@ -482,6 +591,18 @@
                                         <span class="stat-title">SDNN (средн. квадр. откл.):
                                             <span class="stat-num plus-percent" id="sdnn_span"></span>
                                         </span>
+
+
+
+                                    </span>
+
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Скатерограмма</h1>
+                                        </div>
+                                        <div id="scaterPlaceholder" style="width: 370px; height: 370px;">
+
+                                        </div>
                                     </span>
 
                                     <span class="span3 well-con well">
@@ -493,6 +614,10 @@
                                             <span class="stat-num plus-percent" id="pnn50_span"></span>
                                         </span>
                                     </span>
+
+
+
+
 
                                 </div>
                             </div>
@@ -518,10 +643,68 @@
         </section>
 
         <h:panelGroup id="callbackSpan" style="display: none;" >
+            <span id="note_span">#{noteBean.jsStartPointsArray(cardioSessionBean.selectedCardioSessionId)}</span>
             <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
             <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
         </h:panelGroup>
 
+        <h:panelGroup id="notePanel" style="display: none; padding: 10px; border-style: solid; border-color: grey; border-width: 1px; border-radius: 10px; width: 40%; left: 30%; position: fixed; background-color: #1C1D1F;  top: 100px;">
+            <h3>Создание метки</h3>
+            <br/>
+
+            <h:form prependId="false" >
+                <!--                start: -->
+                <h:inputHidden id="note_start" value="#{noteBean.start}" /> 
+                <!--                duration: -->
+                <h:inputHidden id="note_duration" value="#{noteBean.duration}"  /> 
+
+                <h2 style="text-align: center;">Title</h2>
+
+                <h:inputText id="note_title" value="#{noteBean.title}" style="width: 80%; margin-left: 10%;" /> <br/>
+                <h2 style="text-align: center;">Description</h2>
+                <h:inputTextarea id="note_description" value="#{noteBean.description}" style="width: 80%; margin-left: 10%;" />
+
+                <h:inputHidden id="note_selectedSessionId" value="#{noteBean.selectedSessionId}" />
+                <br/><br/>
+                <div style="text-align: right;">
+                    <h:commandButton actionListener="#{noteBean.createNote()}" value="create! " styleClass="btn btn-success" />
+                </div>
+            </h:form>
+            <div style="text-align:  right;">
+                <a onclick="$('#notePanel').hide('toggle');" href="javascript: void()" >Close</a>
+            </div>
+        </h:panelGroup>
+
+        <h:panelGroup id="viewNotePanel">
+            <h:form prependId="false">
+                <h:inputHidden id="select_note_start" value="#{noteBean.selectedNoteStart}" />
+                <h:commandButton id="select_note_button"  style="display: none;" actionListener="#{noteBean.initSelectedNote}" >
+                    <f:ajax execute="@form" render=":viewNotePanel :noteViewPanel :strange_form" onevent="function(data){if (data.status == 'success') { $('#noteViewPanel').show('toggle'); $('#notePanel').hide('toggle');  } }" />
+                </h:commandButton>
+            </h:form>
+        </h:panelGroup>
+
+
+
+        <h:panelGroup id="noteViewPanel" style="display: none; padding: 10px; border-style: solid; border-color: grey; border-width: 1px; border-radius: 10px; width: 40%; left: 30%; position: fixed; background-color: #1C1D1F;  top: 100px;">
+            <h:form prependId="false" id="strange_form" >
+                <h2 style="text-align: center; font-family: 'Open Sans', sans-serif;
+                    color: #A5AAB0;">Title</h2>
+
+                <h:inputText  value="#{noteBean.selectedNote.title}" style="width: 80%; margin-left: 10%;" /> <br/>
+                <h2 style="text-align: center; font-family: 'Open Sans', sans-serif;
+                    color: #A5AAB0;">Description</h2>
+                <h:inputTextarea  value="#{noteBean.selectedNote.description}" style="width: 80%; margin-left: 10%;" />
+
+                <div style="text-align: right;">
+                    <h:commandButton actionListener="#{noteBean.deleteSelectedNote}" value="delete! " styleClass="btn btn-danger"/>
+
+                </div>
+            </h:form>
+            <div style="text-align:  right;">
+                <a onclick="$('#noteViewPanel').hide('toggle');" href="javascript: void()" >Close</a>
+            </div>
+        </h:panelGroup>
 
     </h:body>
 </html>

@@ -71,8 +71,52 @@
             
         </script>
 
-        <script type="text/javascript">
+
+        <script>
             
+            function getMin(rates){
+                var myMin = rates[0][0];
+                for (var i=1; i &lt; rates.length; i++){
+                    if (myMin  > rates[i]) myMin = rates[i][0];
+                }
+                return myMin;
+            }
+            
+            function getMax(rates){
+                var myMax = rates[0][0];
+                for (var i=1; i &lt; rates.length; i++){
+                    if (rates[i] > myMax) myMax = rates[i][0];
+                }
+                return myMax;
+            }
+            
+            function drawScaterogramma(){
+                var mas = [];
+                var rates = getSelectedIntervalsValue(selectionStart,selectionEnd, currentSessionIntervals);
+                
+                var bis = [];
+                var min = getMin(rates);
+                var max = getMax(rates);
+                bis.push([min, min]);
+                bis.push([max, max]);
+                myData = [ 
+                    {data: mas, lines: {show:false}, points: {show:true}}, 
+                    {data: bis, lines: {show:true}}
+                ];
+                
+                for (var i = 1; i &lt; rates.length; i++){
+                    mas.push([rates[i], rates[i-1]]);
+                }
+                var optionsMini = {
+                    series: { shadowSize: 0, color : '#CF3300'},
+                    yaxis: { color: '#92d5ea' },
+                    xaxis: { mode: "time", color: '#92d5ea'}
+                };
+                plot3 = $.plot($("#scaterPlaceholder"),myData);
+            }
+        </script>
+
+        <script type="text/javascript">
             var updateInterval = 5000;
             var CRITICAL_LOADINGS_AMOUNT = 15;
             var plot;
@@ -158,7 +202,9 @@
             function drawMiniPlot(intervals){
                 plot2 = $.plot($("#miniPlaceholder"),
                 [   {data: intervals, lines: {show:true}} ], optionsMini);
+                
                 updateIndicators(intervals);
+                drawScaterogramma();
             }
             
             function updateIndicators(intervals){
@@ -316,7 +362,6 @@
                 // если мы смотри текущую загрузку
                 if (($("#selectedSessionStatus").html() == "1" )){
                     if (!paused){
-                        
                         setTimeout(update, updateInterval);
                     }
                 } else{
@@ -370,12 +415,12 @@
                                 </li>
                                 <li class="divider-vertical"></li>
                             </ul>
-                            
+
                             <span style="margin-top:8px; display: inline-block; ">
                                 Создание метки: <input type="checkbox" id="note_checkbox" onclick="checkboxClick();" />
                             </span>
-                           
-                           <ul class="nav pull-right">
+
+                            <ul class="nav pull-right">
                                 <li>
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
 
@@ -532,9 +577,9 @@
                                         <span class="stat-title">AMo (Ампитуда моды):
                                             <span class="stat-num plus-percent" id="amo_span"></span>
                                         </span>
-                                    </span>
 
-                                    <span class="span4 well-con well">
+                                        <br/>
+
                                         <div class="top-well">
                                             <h1>Статистический анализ</h1>
                                         </div>
@@ -546,6 +591,18 @@
                                         <span class="stat-title">SDNN (средн. квадр. откл.):
                                             <span class="stat-num plus-percent" id="sdnn_span"></span>
                                         </span>
+
+
+
+                                    </span>
+
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Скатерограмма</h1>
+                                        </div>
+                                        <div id="scaterPlaceholder" style="width: 370px; height: 370px;">
+
+                                        </div>
                                     </span>
 
                                     <span class="span3 well-con well">
@@ -557,6 +614,10 @@
                                             <span class="stat-num plus-percent" id="pnn50_span"></span>
                                         </span>
                                     </span>
+
+
+
+
 
                                 </div>
                             </div>
@@ -592,9 +653,9 @@
             <br/>
 
             <h:form prependId="false" >
-<!--                start: -->
+                <!--                start: -->
                 <h:inputHidden id="note_start" value="#{noteBean.start}" /> 
-<!--                duration: -->
+                <!--                duration: -->
                 <h:inputHidden id="note_duration" value="#{noteBean.duration}"  /> 
 
                 <h2 style="text-align: center;">Title</h2>

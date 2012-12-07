@@ -105,8 +105,8 @@
                 var bis = [];
                 var min = getMin(rates);
                 var max = getMax(rates);
-                bis.push([min, min]);
-                bis.push([max, max]);
+                bis.push([min[0], min[0]]);
+                bis.push([max[0], max[0]]);
                 myData = [ 
                     {data: mas, lines: {show:false}, points: {show:true}}, 
                     {data: bis, lines: {show:true}}
@@ -577,6 +577,23 @@
                                         <span class="stat-title">AMo (Ампитуда моды):
                                             <span class="stat-num plus-percent" id="amo_span"></span>
                                         </span>
+
+                                        <br/>
+                                        
+                                        <div class="top-well">
+                                            <h1>Статистический анализ</h1>
+                                        </div>
+
+                                        <span class="stat-title">RRNN (Среднее значение): 
+                                            <span class="stat-num plus-percent" id="rrnn_span"></span>
+                                        </span>
+
+                                        <span class="stat-title">SDNN (средн. квадр. откл.):
+                                            <span class="stat-num plus-percent" id="sdnn_span"></span>
+                                        </span>
+                                        
+                                        
+                                        
                                     </span>
 
                                     <span class="span4 well-con well">
@@ -590,26 +607,6 @@
 
                                     <span class="span3 well-con well">
                                         <div class="top-well">
-                                            <h1>Статистический анализ</h1>
-                                        </div>
-
-                                        <span class="stat-title">RRNN (Среднее значение): 
-                                            <span class="stat-num plus-percent" id="rrnn_span"></span>
-                                        </span>
-
-                                        <span class="stat-title">SDNN (средн. квадр. откл.):
-                                            <span class="stat-num plus-percent" id="sdnn_span"></span>
-                                        </span>
-                                    </span>
-
-
-                                    <span class="span4 well-con well">
-                                        <span onclick="drawScaterogramma();">draw</span>
-                                    </span>
-
-
-                                    <span class="span3 well-con well">
-                                        <div class="top-well">
                                             <h1>Временной анализ</h1>
                                         </div>
 
@@ -617,6 +614,9 @@
                                             <span class="stat-num plus-percent" id="pnn50_span"></span>
                                         </span>
                                     </span>
+
+
+
 
 
                                 </div>
