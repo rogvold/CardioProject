@@ -2,20 +2,22 @@ package ru.cardio.servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import ru.cardio.core.managers.CardioSessionManagerLocal;
 
 /**
  *
  * @author rogvold
  */
-public class data extends HttpServlet {
+public class KubiosServlet extends HttpServlet {
 
-    public static final int AMOUNT = 5;
+    @EJB
+    CardioSessionManagerLocal cardMan;
     
     /**
      * Processes requests for both HTTP
@@ -32,11 +34,15 @@ public class data extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
-            List<Double> list = new ArrayList();
-            for (int i= 0; i < data.AMOUNT; i++){
-               list.add((Math.random()) * 0.5 + 0.3);
+            /*
+             * TODO output your page here. You may use following sample code.
+             */
+            Long sessionId = Long.parseLong(request.getParameter("id"));
+            List<String> list = cardMan.getKubiosDataOfRatesInCardioSessionBySessionId(sessionId, -1, null);
+            for (String s: list){
+                out.println(s +"<br/>");
             }
-            out.println(list);
+//            out.println(cardMan.getKubiosDataOfRatesInCardioSessionBySessionId(sessionId, -1, null));
         } finally {            
             out.close();
         }

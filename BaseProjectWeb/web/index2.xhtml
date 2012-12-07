@@ -33,8 +33,10 @@
                 if (note_mode){
                     $("#note_start").val(start);
                     $("#note_duration").val(duration);
-
                     $("#notePanel").show('toggle');
+                    
+                    $("#note_description").val("");
+                    $("#note_title").val("");
                 }
 
             }            
@@ -234,7 +236,7 @@
                     }
 
                     
-                    currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);dk
+                    currentIntervals = getSelectedIntervals(selectionStart,selectionEnd, a);
                     drawMiniPlot(currentIntervals);
                 }
             }
@@ -246,7 +248,9 @@
                 secondLine = getTheSecondLine(a[0][0],a[a.length - 1][0]);
                 notesList = getNotesArray();
                 //                    alert(secondLine);
-                myData = [ {data: notesList, color : 'green', lines: {show:false}, points: { show: true, symbol: "triangle" } },    {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
+                myData = [ 
+                    {data: notesList, color : 'green', lines: {show:false}, points: { show: true, symbol: "triangle" } }, 
+                    {data: a, lines: {show:true}},{data: secondLine, points :{show: true}, lines: {show:false}}];
                 
                 if (!rendered){
                     plot = $.plot($("#placeholder"),myData , options); 

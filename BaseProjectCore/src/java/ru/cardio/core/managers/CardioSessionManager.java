@@ -74,13 +74,14 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
     }
 
     @Override
-    public List<Rate> getMyRatesInCardioSession(Long sessionId, int amount, Long reuquestOwnerId) {
+    public List<Rate> getMyRatesInCardioSession(Long sessionId, int amount, Long requestOwnerId) {
         CardioSession cs = getCardioSessionById(sessionId);
         if (cs == null) {
             return null;
         }
-        if (cs.getUserId().equals(reuquestOwnerId)) {
-            System.out.println("getMyRatesInCardioSession: sessionId = " + sessionId + " ; requestOwnerId = " + reuquestOwnerId);
+        //TODO: erase || requestOwnerId == null
+        if (cs.getUserId().equals(requestOwnerId) || requestOwnerId == null) {
+            System.out.println("getMyRatesInCardioSession: sessionId = " + sessionId + " ; requestOwnerId = " + requestOwnerId);
             return getRatesInCardioSession(sessionId, amount);
         } else {
             return null;
@@ -97,6 +98,28 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         s = s + "[" + r.getStartDate().getTime() + ", " + r.getDuration() + "]";
         s = s + "]";
         return s;
+    }
+
+    private String getKubiosDataOfCardioSession(List<Rate> list) {
+        String s = "";
+        for (Rate r : list) {
+            s += r.getDuration() + "\n";
+        }
+        return s;
+    }
+
+    private List<String> getKubiosDataOfCardioSessionStringList(List<Rate> list){
+        List<String> l = new ArrayList();
+        for (Rate r: list){
+            l.add(new Integer(r.getDuration()).toString());
+        }
+        return l;
+    }
+    
+    @Override
+    public List<String> getKubiosDataOfRatesInCardioSessionBySessionId(Long sessionId, int amount, Long requestOwnerId) {
+        List<Rate> list = getMyRatesInCardioSession(sessionId, amount, requestOwnerId);
+        return (list == null) ? null : getKubiosDataOfCardioSessionStringList(list);
     }
 
     @Override

@@ -19,17 +19,20 @@ public interface CardioSessionManagerLocal {
 
     public String getPlotDataOfRatesInMyCardioSession(Long sessionId, int amount, Long requestOwnerId);
 
+    public List<String> getKubiosDataOfRatesInCardioSessionBySessionId(Long sessionId, int amount, Long requestOwnerId);
+
     public String getPlotDataOfCurrentSession(int amount, Long requestOwnerId);
 
     public CardioSession getCardioSessionById(Long sessionId);
 
     public List<Long> getUserCardioSessionsId(Long userId);
-    
+
     public List<CardioSession> getUserCardioSessions(Long userId);
 
     public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate);
 
     public CardioSession getCurrentCardioSession(Long userId);
+
     public Long getCurrentCardioSessionId(Long userId);
 
     public void disableCurrentCardioSession(Long userId);
@@ -37,16 +40,20 @@ public interface CardioSessionManagerLocal {
     public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession);
 
     public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password);
-    
+
     public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password);
-    
+
     public int getSessionRatesAmountById(Long sessionId);
+
     public Long getSessionDurationById(Long sessionId);
+
     public Date getSessionStartDateById(Long sessionId);
+
     public int getSessionStatusById(Long sessionId);
-    
+
     public void updateSessionDescription(Long sessionId, String newDescription);
+
     public boolean deleteSession(Long sessionId);
-    
+
     public boolean userHasActiveSession(Long userId);
 }
