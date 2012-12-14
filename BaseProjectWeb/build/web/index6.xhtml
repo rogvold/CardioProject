@@ -95,7 +95,7 @@
                 var rates = getSelectedIntervalsValue(selectionStart,selectionEnd, currentSessionIntervals);
                 
                 for (var i = 1; i &lt; rates.length; i++){
-                    mas.push([rates[i], rates[i-1]]);
+                    mas.push([rates[i-1], rates[i]]);
                 }
                 var optionsMini = {
                     series: { shadowSize: 0, color : '#CF3300'},
@@ -105,8 +105,9 @@
                 var bis = [];
                 var min = getMin(rates);
                 var max = getMax(rates);
-                bis.push([min[0], min[0]]);
-                bis.push([max[0], max[0]]);
+                
+                bis.push([min[0] - 100 , min[0] - 100]);
+                bis.push([max[0] + 100 , max[0] + 100]);
                 myData = [ 
                     {data: mas, lines: {show:false}, points: {show:true}}, 
                     {data: bis, lines: {show:true}}
@@ -114,6 +115,53 @@
                 
                 plot3 = $.plot($("#scaterPlaceholder"),myData);
             }
+            
+            function drawDiffHistogramm(){
+                var xmin = -500;
+                var xmax = 500;
+                var width = 8;
+                var mas = [];
+                for (var i=0; -i > - Math.floor(1000 / width); i++){
+                    mas.push(0);
+                }
+                //                alert(mas);
+                //                diffScaterPlaceholder
+
+                var rates = getSelectedIntervalsValue(selectionStart,selectionEnd, currentSessionIntervals);
+                for (var i = 1; i &lt; rates.length; i++){
+                    var u = Math.floor((rates[i-1] - rates[i] - xmin)/width);
+                    mas[Math.floor((rates[i-1] - rates[i] - xmin)/width)]++;
+                }
+                var mas2 = [];
+                
+                var imin = 0;
+                for (var i = 0; -i > -mas.length; i++){
+                    if (mas[i] > 0 ){
+                        imin = i;
+                        break;
+                    }
+                }
+                var imax = mas.length - 1;
+                for (var i = mas.length; i>0; i--){
+                    if (mas[i] > 0 ){
+                        imax = i;
+                        break;
+                    }
+                }
+                //                alert(imin);
+                
+                for (var i = imin; -i > - imax; i++){
+                    mas2.push([xmin + i * width , mas[i]]);
+                }
+                
+                myData = [ 
+                    {data: mas2,bars: { show: true, barWidth : width }}
+                ];
+                plot4 = $.plot($("#diffScaterPlaceholder"),myData);
+                //                alert(mas);
+            }
+            
+            
         </script>
 
         <script type="text/javascript">
@@ -205,6 +253,7 @@
                 
                 updateIndicators(intervals);
                 drawScaterogramma();
+                drawDiffHistogramm();
             }
             
             function updateIndicators(intervals){
@@ -579,7 +628,7 @@
                                         </span>
 
                                         <br/>
-                                        
+
                                         <div class="top-well">
                                             <h1>Статистический анализ</h1>
                                         </div>
@@ -591,19 +640,20 @@
                                         <span class="stat-title">SDNN (средн. квадр. откл.):
                                             <span class="stat-num plus-percent" id="sdnn_span"></span>
                                         </span>
-                                        
-                                        
-                                        
+
                                     </span>
 
                                     <span class="span4 well-con well">
                                         <div class="top-well">
                                             <h1>Скатерограмма</h1>
                                         </div>
+                                        <br/>
                                         <div id="scaterPlaceholder" style="width: 370px; height: 370px;">
 
                                         </div>
                                     </span>
+
+
 
                                     <span class="span3 well-con well">
                                         <div class="top-well">
@@ -614,6 +664,18 @@
                                             <span class="stat-num plus-percent" id="pnn50_span"></span>
                                         </span>
                                     </span>
+
+                                    <span class="span4 well-con well">
+                                        <div class="top-well">
+                                            <h1>Дифференциальная гистограмма</h1>
+                                        </div>
+                                        <br/>
+                                        <div id="diffScaterPlaceholder" style="width: 370px; height: 370px;">
+                                            <span onclick="drawDiffHistogramm();"> diff </span>
+                                        </div>
+                                    </span>
+
+
 
 
 

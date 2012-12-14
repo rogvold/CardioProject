@@ -74,7 +74,11 @@ public class XmlUtils {
         Data dat = new Data();
         dat.setStart(start);
         dat.setRates(nrates);
-        dat.setId(jsonObj.get(XmlUtils.JSON_FIELD_ID).toString());
+        try {
+            dat.setId(jsonObj.get(XmlUtils.JSON_FIELD_ID).toString());
+        } catch (Exception e) {
+        }
+//        dat.setId(jsonObj.get(XmlUtils.JSON_FIELD_ID).toString());
         dat.setEmail(jsonObj.get(XmlUtils.JSON_FIELD_EMAIL).toString());
         dat.setPassword(jsonObj.get(XmlUtils.JSON_FIELD_PASSWORD).toString());
 

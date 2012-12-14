@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import ru.cardio.indicators.utils.Training;
 
 /**
  *
@@ -28,10 +29,13 @@ public abstract class AbstractIndicatorsService {
     public static final int UPPER_BORDER = 1300;
     protected List<Integer> intervals;
     protected int duration = DEFAULT_DURATION;
+    protected Training training;
 
     public AbstractIndicatorsService(List<Integer> intervals) {
         this.intervals = intervals;
+//        this.training = new Training()
     }
+
 
     public AbstractIndicatorsService() {
     }

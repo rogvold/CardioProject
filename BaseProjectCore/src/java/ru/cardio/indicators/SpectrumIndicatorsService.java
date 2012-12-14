@@ -12,9 +12,13 @@ import java.util.List;
  */
 public class SpectrumIndicatorsService extends AbstractIndicatorsService {
 
+    
+    
     public SpectrumIndicatorsService(List<Integer> intervals) {
         super(intervals);
     }
+    
+    
 
     public SpectrumIndicatorsService() {
     }
