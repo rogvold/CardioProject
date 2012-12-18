@@ -17,6 +17,7 @@ public class StatisticsIndicatorsService extends AbstractIndicatorsService {
     }
 
     public StatisticsIndicatorsService() {
+        
     }
 
     

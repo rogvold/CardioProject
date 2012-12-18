@@ -33,15 +33,20 @@ public abstract class AbstractIndicatorsService {
 
     public AbstractIndicatorsService(List<Integer> intervals) {
         this.intervals = intervals;
-//        this.training = new Training()
+        this.training = new Training("no id", intervals);
     }
 
+    public AbstractIndicatorsService(String id,List<Integer> intervals){
+        this.intervals = intervals;
+        this.training = new Training(id, intervals);
+    }
 
     public AbstractIndicatorsService() {
     }
 
     public void setIntervals(List<Integer> list) {
         this.intervals = list;
+        this.training = new Training("no id", list);
     }
 
     public void setDuration(int newDuration) {

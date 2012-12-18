@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.core.managers;
 
 import javax.ejb.Stateless;
@@ -73,7 +69,7 @@ public class UserManager implements UserManagerLocal {
 
     @Override
     public boolean userExistsById(Long userId) {
-        return (getUserById(userId)==null) ? false : true;
+        return (getUserById(userId) == null) ? false : true;
     }
 
     @Override
@@ -84,11 +80,32 @@ public class UserManager implements UserManagerLocal {
     @Override
     public boolean checkAuData(Long userId, String password) {
         System.out.println("checkAuData: userId = " + userId + " / password = " + password);
-        
+
         User u = em.find(User.class, userId);
         try {
             return u.getPassword().equals(password);
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkAuthorisationData(String email, String password) {
+        User u = getUserByEmail(email);
+        try {
+            return u.getPassword().equals(password);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean checkEmailAndLogin(String email, String password) throws Exception {
+        User u = getUserByEmail(email);
+        if (u == null) throw new Exception("user with given email not found");
+        if (u.getPassword().equals(password)){
+            return true;
+        }else {
             return false;
         }
     }

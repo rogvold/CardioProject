@@ -14,6 +14,7 @@ import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.core.managers.IndicatorsManagerLocal;
 import ru.cardio.graphics.MyPlot;
 import ru.cardio.indicators.HRVIndicatorsService;
+import ru.cardio.indicators.SpectrumIndicatorsService;
 import ru.cardio.indicators.StatisticsIndicatorsService;
 import ru.cardio.indicators.TimeIndicatorsService;
 
@@ -64,4 +65,11 @@ public class ChartsBean {
         MyPlot plot = indMan.getPlotOfParameters(sessionId, new StatisticsIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
         return plot == null ? "" : plot.getJsonString();
     }
+    
+    public String plotSpectralJsonString(String paramName) throws Exception{
+        System.out.println("paramName = " + paramName);
+        MyPlot plot = indMan.getPlotOfParameters(sessionId, new SpectrumIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
+        return plot == null ? "" : plot.getJsonString();
+    }
+    
 }

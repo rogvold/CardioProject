@@ -5,44 +5,48 @@
 package ru.cardio.indicators;
 
 import java.util.List;
+import ru.cardio.indicators.utils.Lomb;
+import ru.cardio.indicators.utils.Periodogram;
+import ru.cardio.indicators.utils.Square;
 
 /**
  *
- * @author rogvold, ???
+ * @author rogvold, Alexanter Taraymovich, Kirill Y. Tsibriy
  */
-public class SpectrumIndicatorsService extends AbstractIndicatorsService {
 
-    
-    
-    public SpectrumIndicatorsService(List<Integer> intervals) {
-        super(intervals);
-    }
-    
-    
+public class SpectrumIndicatorsService extends AbstractIndicatorsService {
 
     public SpectrumIndicatorsService() {
     }
 
     
     
+    public SpectrumIndicatorsService(List<Integer> intervals) {
+        super(intervals);
+    }
+
+    public SpectrumIndicatorsService(String id, List<Integer> intervals) {
+        super(id, intervals);
+    }
+
     public double getHFPercents() {
-        //TODO: implement =)
-        return 20;
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0.15, 0.4).Calculate();
     }
 
     public double getLFPercents() {
-        //TODO: implement =)
-        return 30;
+        List<Periodogram> periodogram = this.training.evaluate(new Lomb());
+        return new Square(periodogram, 0.04, 0.15).Calculate();
     }
 
     public double getVLFPercents() {
-        //TODO: implement =)
-        return 50;
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0.0033, 0.04).Calculate();
     }
 
     public double getULFPercents() {
-        //TODO: implement =)
-        return 0;
+                List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0, 0.0033).Calculate();
     }
 
     public double getTP() {
@@ -51,7 +55,6 @@ public class SpectrumIndicatorsService extends AbstractIndicatorsService {
     }
 
     public double getIC() {
-        //TODO: implement =)
-        return 0;
+        return (getHFPercents() + getLFPercents())/getVLFPercents();
     }
 }

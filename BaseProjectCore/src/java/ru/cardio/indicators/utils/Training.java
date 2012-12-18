@@ -23,7 +23,7 @@ public class Training {
     public Training() {
     }
 
-    Training(String idString, List<Integer> intervals) {
+    public Training(String idString, List<Integer> intervals) {
         this.idString = idString;
         this.intervals = intervals;
     }

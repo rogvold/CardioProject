@@ -4,6 +4,10 @@
         "start":"2005-02-25 11:50:11.000"
     }
 
+/BaseProjectWeb/mobileauth?json={"purpose": "CheckAuthorisationData", "email": "sha-sabir@yandex.ru", "password": "sabirmipt", "secret":"h7a7RaRtvAVwnMGq5BV6"}
+/BaseProjectWeb/mobileauth?json={"purpose": "Register", "email": "vasya@pupkin.ru", "password": "qwerty", "secret":"h7a7RaRtvAVwnMGq5BV6"}
+
+/BaseProjectWeb/mobileauth?json={"purpose": "CheckUserExistence", "email": "sha-sabir@yandex.ru", "secret":"h7a7RaRtvAVwnMGq5BV6"}
 
 CREATE ROLE cardio LOGIN ENCRYPTED PASSWORD 'md54261ccd4bc89ceb2fd510ab1414c52bd'
   CREATEDB CREATEROLE
