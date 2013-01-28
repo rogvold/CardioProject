@@ -1,227 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
-    <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8"/>
-        <title>Twitter Bootstrap</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link href="../css/bootstrap.css" rel="stylesheet" />
-        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
-        <link href="../css/Common.css" rel="stylesheet" />
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:ppctu="http://primefaces.prime.com.tr/ui">
 
-        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
 
-        <script src="./js/jquery.min.js"></script>
-        <script src="../js/jquery.flot.js"></script>
-        <script src="./js/jquery.flot.selection.js"></script>
-        <script src="./js/jquery.flot.pie.js"></script>
-    </h:head>
-    <h:body>
-        <div class="container">
-            <section id="top-bar">
-                <div class="navbar navbar-fixed-top">
-                    <div class="navbar-inner">
-                        <div class="container">
-                            <ul class="nav">
-                                <li>
-                                    <a href="#{request.contextPath}/faces/index.xhtml">
-                                        Dashboard 
-                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
-                                            <span class="badge badge-success">!</span>
-                                        </c:if>
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
-                                        Сессии
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="#{request.contextPath}/faces/card.xhtml">
-                                        Карточка
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="javascript:void()">
-                                        FAQ
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="javascript:void()">
-                                        Components
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                            </ul>
-                            <form class="navbar-search pull-left">
-                                <input type="text" class="search-query" placeholder="Search" />
-                            </form>
-                            <ul class="nav pull-right">
-                                <li>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
+    <ui:composition template="templates/template.xhtml">
 
-                                    <!--                                    <a href="#" >-->
+        <ui:define name="javascripts">
+        </ui:define>
 
-                                    <!--                                    </a>-->
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Profile</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#" >
-                                                <h:form>
-                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
-                                                </h:form>
-                                            </a>
-                                            <!--                                            <a href="">Logout</a>-->
-                                        </li>
-                                    </ul>
-                                </li>
-                                <h:form style="position: absolute; right: -50px; top:8px;">
-                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
-                                </h:form>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
+        <ui:define name="topbar">
+            <c:if test="#{webSession.userGroup == 0}">
+                <ui:include src="templates/userBar.xhtml" />
+            </c:if>
 
-            <section id="body-contnet">
+            <c:if test="#{webSession.userGroup == 1}">
+                <ui:include src="templates/trainerBar.xhtml" />
+            </c:if>
+        </ui:define>
 
-                <h:panelGroup id="deletion_dialog" style="
-                              text-align: center;
-                              width: 24%;
-                              border: 1px solid #CE3636;
-                              text-align: left;
-                              position: fixed;
-                              top: 100px;
-                              left: 38%;
-                              z-index: 10000; display: none; z-index: 100000; background-color: #1C1D1F;" class="well sign-contaier">
-                    Вы действительно хотите удалить сессию № #{cardioSessionBean.deletionSessionId} ?
-                    <br/>
-                    <h:form style="margin-top: 20px; text-align: center;" >
-                        <h:commandButton styleClass="btn btn-danger" style="margin-right: 20px;" actionListener="#{cardioSessionBean.deleteCardioSession(cardioSessionBean.deletionSessionId)}" value=" Да " />
-                        <div class="btn btn-success" onclick="$('#deletion_dialog').hide('toggle'); window.location.href = window.location.href" > Нет </div>
-                    </h:form>
-                </h:panelGroup>
+        <ui:define name="bodycontent">
+            <h:panelGroup id="deletion_dialog" style="
+                          text-align: center;
+                          width: 24%;
+                          border: 1px solid #CE3636;
+                          text-align: left;
+                          position: fixed;
+                          top: 100px;
+                          left: 38%;
+                          z-index: 10000; display: none; z-index: 100000; background-color: #1C1D1F;" class="well sign-contaier">
+                Вы действительно хотите удалить сессию № #{cardioSessionBean.deletionSessionId} ?
+                <br/>
+                <h:form style="margin-top: 20px; text-align: center;" >
+                    <h:commandButton styleClass="btn btn-danger" style="margin-right: 20px;" actionListener="#{cardioSessionBean.deleteCardioSession(cardioSessionBean.deletionSessionId)}" value=" Да " />
+                    <div class="btn btn-success" onclick="$('#deletion_dialog').hide('toggle'); window.location.href = window.location.href" > Нет </div>
+                </h:form>
+            </h:panelGroup>
 
 
 
-                <section id="half-width-box" style="margin-top: 50px;">
-                    <h1>Редактирование сессий</h1>
-                    <br/>
-                    <div class="row">
-                        <div class="span12">
-                            <div class="well well-w-top">
-                                <div class="well-con height" style="overflow-y: auto; ">
-                                    <div class="top-well">
-                                        <h1><i class="s-icon s-icon-posts"></i>Мои сессии</h1>
-                                    </div>
-                                    <div class="well-content">
-                                        <table class="table table-striped pull-left">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Start date</th>
-                                                    <!--                                                    <th>Rates amount</th>-->
-                                                    <th>Duration</th>
-                                                    <th>Status</th>
-                                                    <th>Описание</th>
-                                                    <th></th>
-                                                </tr></thead>
-                                            <tbody>
-                                                <c:forEach var="cs" items="#{cardioSessionBean.userCardioSessions}">
-                                                    <tr id="sessionTr#{cs.id}" class="sessionTrClass">
-                                                        <td>
-                                                            #{cs.id}
-                                                        </td>
+            <section id="half-width-box" style="margin-top: 50px;">
+                <h1>Редактирование сессий</h1>
+                <br/>
+                <div class="row">
+                    <div class="span12">
+                        <div class="well well-w-top">
+                            <div class="well-con height" style="overflow-y: auto; ">
+                                <div class="top-well">
+                                    <h1><i class="s-icon s-icon-posts"></i>Мои сессии</h1>
+                                </div>
+                                <div class="well-content">
+                                    <table class="table table-striped pull-left">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Start date</th>
+                                                <!--                                                    <th>Rates amount</th>-->
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                                <th>Описание</th>
+                                                <th></th>
+                                            </tr></thead>
+                                        <tbody>
+                                            <c:forEach var="cs" items="#{cardioSessionBean.userCardioSessions}">
+                                                <tr id="sessionTr#{cs.id}" class="sessionTrClass">
+                                                    <td>
+                                                        #{cs.id}
+                                                    </td>
 
-                                                        <td>
-                                                            <h:outputText value="#{cs.startDate}">
-                                                                <f:convertDateTime timeZone="GMT+4" pattern="dd.MM.YYYY в HH.mm" />
-                                                            </h:outputText>
-                                                        </td>
+                                                    <td>
+                                                        <h:outputText value="#{cs.startDate}">
+                                                            <f:convertDateTime timeZone="GMT+4" pattern="dd.MM.YYYY в HH.mm" />
+                                                        </h:outputText>
+                                                    </td>
 
-                                                        <td>#{cardioSessionBean.prettyDurationBySessionId(cs.id)}</td>   
+                                                    <td>#{cardioSessionBean.prettyDurationBySessionId(cs.id)}</td>   
 
-                                                        <td>
-                                                            <c:if test="#{cs.status == 1}" >
-                                                                <span class="price">Current</span>
-                                                            </c:if>
-                                                            <c:if test="#{cs.status == 0}" >
-                                                                <span class="minus-percent">Old</span>
-                                                            </c:if>
-                                                        </td>
+                                                    <td>
+                                                        <c:if test="#{cs.status == 1}" >
+                                                            <span class="price">Current</span>
+                                                        </c:if>
+                                                        <c:if test="#{cs.status == 0}" >
+                                                            <span class="minus-percent">Old</span>
+                                                        </c:if>
+                                                    </td>
 
-                                                        <td class="span9" >
-                                                            <h:form>
-                                                                <h:inputText value="#{cs.description}" style="width: 75%;" />
-                                                                <ppctu:commandButton actionListener="#{cardioSessionBean.updateDescription(cs.id, cs.description)}" 
-                                                                                     styleClass="btn btn-success" value="update" oncomplete="alert('Описание сессии № #{cs.id} успешно обновлено');"
-                                                                                     style="width: 60px; margin-left: 3px; margin-top: -10px; padding: 8px;"  />
+                                                    <td class="span9" >
+                                                        <h:form>
+                                                            <h:inputText value="#{cs.description}" style="width: 75%;" />
+                                                            <ppctu:commandButton actionListener="#{cardioSessionBean.updateDescription(cs.id, cs.description)}" 
+                                                                                 styleClass="btn btn-success" value="update" oncomplete="alert('Описание сессии № #{cs.id} успешно обновлено');"
+                                                                                 style="width: 60px; margin-left: 3px; margin-top: -10px; padding: 8px;"  />
+                                                        </h:form>
+                                                    </td>
+
+                                                    <td class="align-right">
+                                                        <a href="#">
+                                                            <h:form style="display: inline-block;" prependId="false">
+
+                                                                <ppctu:commandLink update="deletion_dialog" 
+                                                                                   style="color: #CE3636;"
+                                                                                   oncomplete="$('#deletion_dialog').show('toggle');"
+                                                                                   actionListener="#{cardioSessionBean.selectSessionForDeleting(cs.id)}"
+                                                                                   >
+                                                                    Delete
+                                                                </ppctu:commandLink>
+                                                                <!--                                                                    <a style="color: #CE3636;" >
+                                                                                                                                        Delete
+                                                                                                                                    </a>-->
+                                                                |
+                                                                <a target="_blank" href="#{request.contextPath}/faces/charts.xhtml?id=#{cs.id}">
+                                                                    More
+                                                                </a>
                                                             </h:form>
-                                                        </td>
-
-                                                        <td class="align-right">
-                                                            <a href="#">
-                                                                <h:form style="display: inline-block;" prependId="false">
-
-                                                                    <ppctu:commandLink update="deletion_dialog" 
-                                                                                       style="color: #CE3636;"
-                                                                                       oncomplete="$('#deletion_dialog').show('toggle');"
-                                                                                       actionListener="#{cardioSessionBean.selectSessionForDeleting(cs.id)}"
-                                                                                       >
-                                                                        Delete
-                                                                    </ppctu:commandLink>
-                                                                    <!--                                                                    <a style="color: #CE3636;" >
-                                                                                                                                            Delete
-                                                                                                                                        </a>-->
-                                                                    |
-                                                                    <a target="_blank" href="#{request.contextPath}/faces/charts.xhtml?id=#{cs.id}">
-                                                                        More
-                                                                    </a>
-                                                                </h:form>
-                                                            </a>
-                                                            <!--                                                            | 
-                                                                                                                        <a href="#">Delete</a>-->
-                                                        </td>
-                                                    </tr>
-                                                </c:forEach>
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                                        </a>
+                                                        <!--                                                            | 
+                                                                                                                    <a href="#">Delete</a>-->
+                                                    </td>
+                                                </tr>
+                                            </c:forEach>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </section>
-
-            </section>
-
-
-        </div>
-        <section id="footer">
-            <div class="footer">
-                <div class="container">
-                    <div class="copyright">
-                        Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
-                        loadings = <span id="loadings"></span>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </ui:define>
 
-        <h:panelGroup id="callbackSpan" style="display: none;" >
-            <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
-            <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
-        </h:panelGroup>
+        <ui:define name="additional">
 
+        </ui:define>
 
 
 
-    </h:body>
+    </ui:composition>
+
 </html>

@@ -13,13 +13,14 @@ import ru.cardio.core.managers.UserManagerLocal;
 
 /**
  *
- * @author Danon and Sabir
+ * @author Danon and Rogvold
  */
 @ManagedBean
 @SessionScoped
 public class WebSession implements Serializable {
 
     private static final String LOGIN_REDIRECT_URL = "/BaseProjectWeb/faces/login.xhtml";
+
     private transient HttpSession session = null;
     private boolean registered;
     @EJB
@@ -40,9 +41,12 @@ public class WebSession implements Serializable {
         FacesContext fc = FacesContext.getCurrentInstance();
         if (!isSignedIn()) {
             ExternalContext ext = fc.getExternalContext();
-            
             ext.redirect(LOGIN_REDIRECT_URL);
         }
+    }
+
+    public int getUserGroup(){
+        return userMan.getUserGroupById(getUserId());
     }
 
     public boolean isRegistered() {

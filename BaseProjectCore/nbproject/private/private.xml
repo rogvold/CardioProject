@@ -2,11 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/SpectrumIndicatorsService.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/FFT.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/Training.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/TrainingCache.java</file>
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/Evaluation.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/utils/EJBUtils.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/UserManager.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/utils/JsonUtils.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/core/managers/UserManagerLocal.java</file>
         <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/TrainingReader.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectCore/src/java/ru/cardio/indicators/utils/Evaluation.java</file>
     </open-files>
 </project-private>

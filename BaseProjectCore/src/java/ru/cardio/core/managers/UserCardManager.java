@@ -40,6 +40,7 @@ public class UserCardManager implements UserCardManagerLocal {
             c.setDiadnoses(card.getDiadnoses());
             c.setFirstName(card.getFirstName());
             c.setLastName(card.getLastName());
+            c.setAboutMe(card.getAboutMe());
             c.setUserId(userId);
             return em.merge(c);
         } catch (Exception ex) {

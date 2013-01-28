@@ -21,6 +21,9 @@ public class UserCard implements Serializable {
     @Column(length = 3000)
     private String diadnoses;
     private Long userId;
+    
+    @Column(length=3000)
+    private String aboutMe;
 
     public Long getId() {
         return id;
@@ -70,6 +73,16 @@ public class UserCard implements Serializable {
         this.lastName = lastName;
     }
 
+    public String getAboutMe() {
+        return aboutMe;
+    }
+
+    public void setAboutMe(String aboutMe) {
+        this.aboutMe = aboutMe;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;

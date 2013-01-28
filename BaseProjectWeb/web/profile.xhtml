@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:ppctu="http://primefaces.prime.com.tr/ui">
+
+
+    <ui:composition template="templates/template.xhtml">
+
+        <ui:define name="javascripts">
+        </ui:define>
+
+        <ui:define name="topbar">
+            <c:if test="#{webSession.userGroup == 0}">
+                <ui:include src="templates/userBar.xhtml" />
+            </c:if>
+
+            <c:if test="#{webSession.userGroup == 1}">
+                <ui:include src="templates/trainerBar.xhtml" />
+            </c:if>
+        </ui:define>
+
+        <ui:define name="bodycontent">
+            <h:panelGroup rendered="#{profileBean.profileUser == null}">
+                <div class="alert alert-block alert-error fade in" id="alerts" style="margin-top: 60px;">
+                    <button class="close" data-dismiss="alert" type="button" onclick="$('#alerts').hide('fade');">×</button>
+                    <h4 class="alert-heading">Oh snap! You got an error!</h4>
+                    <p>Данная страница не существует</p>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{profileBean.profileUser != null}">
+                <div class="well well-w-top" style="margin-top: 60px;">
+
+                    <div class="well-con height">
+                        <div class="top-well" style="top:200px;">
+                            <h1><i></i>Личная карточка
+                                <c:if test="#{profileBean.profileUser.userGroup == 1}">
+                                    доктора/тренера
+                                </c:if>
+                                <c:if test="#{profileBean.profileUser.userGroup == 0}">
+                                    пользователя
+                                </c:if>
+                                (<span style="color: #08C;">ID</span>=#{profileBean.profileUser.id})
+                            </h1>
+                        </div>
+                        <div class="well-content">
+                            <section id="user-profile">
+                                <div class="profile-container">
+                                    <div class="profile-img pull-left thumbnail">
+
+                                        <c:if test="#{profileBean.profileUser.userGroup == 1}">
+                                            <img src="./images/eye.png" width="110" height="110" alt=""/>
+                                        </c:if>
+                                        <c:if test="#{profileBean.profileUser.userGroup == 0}">
+                                            <img src="./images/user.png" width="110" height="110" alt=""/>
+                                        </c:if>
+                                    </div>
+                                    <div class="profile-form span6 pull-left">
+
+                                        <fieldset>
+                                            <ul>
+                                                <li>
+                                                    <span style="color: #08C;">Фамилия:</span> #{profileBean.profileUser.lastName}
+                                                </li>
+                                                <li>
+                                                    <span style="color: #08C;">Имя:</span> #{profileBean.profileUser.firstName}
+                                                </li>
+                                                <li>
+                                                    <span style="color: #08C;">Отделение:</span> 
+                                                    <span class="label label-inverse" >
+                                                        <c:if test="#{empty profileBean.profileUser.department}"><span style="color: #CE3636; font-weight: bold; text-shadow: 1px 1px 7px #CE3636;">Не указано</span></c:if>
+                                                        <c:if test="#{not empty profileBean.profileUser.department}">#{profileBean.profileUser.department}</c:if>
+                                                    </span>
+                                                </li>
+                                            </ul>
+
+                                            <div class="control-group">
+                                                <label style="color: #08C;">О себе</label>
+
+                                                <c:if test="#{empty profileBean.profileUserCard.aboutMe}">
+                                                    <span class="label label-inverse" >
+                                                        <span style="color: #CE3636; font-weight: bold; text-shadow: 1px 1px 7px #CE3636;">Не указано</span>
+                                                    </span>
+                                                </c:if>
+
+                                                <c:if test="#{not empty profileBean.profileUserCard.aboutMe}">#{profileBean.profileUserCard.aboutMe}</c:if>
+
+                                            </div>
+
+                                            <c:if test="#{friendsBean.areFriends(profileBean.myId, profileBean.profileUserId) and (profileBean.profileUser.userGroup == 0) }">
+                                                <div class="control-group">
+                                                    <label style="color: #08C;">Диагнозы</label>
+                                                    #{profileBean.profileUserCard.diadnoses}
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label  style="color: #08C;">Дополнительно</label>
+                                                    #{profileBean.profileUserCard.description}
+                                                </div>
+                                            </c:if>
+
+
+                                        </fieldset>
+
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+        </ui:define>
+
+
+
+
+    </ui:composition>
+
+</html>

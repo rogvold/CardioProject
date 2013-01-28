@@ -40,6 +40,7 @@ public class LoginBean implements Serializable {
     private String confirmPassword;
     private String flag;
     private String notificationText;
+    private int group;
 
     public String getFlag() {
         return flag;
@@ -97,6 +98,16 @@ public class LoginBean implements Serializable {
         this.notificationText = notificationText;
     }
 
+    public int getGroup() {
+        return group;
+    }
+
+    public void setGroup(int group) {
+        this.group = group;
+    }
+
+    
+    
     private boolean checkEmailAndPasword() {
         boolean b = true;
         if (UserUtils.isValidEmail(email) == false) {
@@ -169,7 +180,7 @@ public class LoginBean implements Serializable {
         if (!checkRegistrationData()) {
             return;
         }
-        User u = userMan.registerNewUser(email, password, firstName, lastName);
+        User u = userMan.registerNewUser(email, password, firstName, lastName, group);
         if (u == null) {
             this.flag = FLAG_REGISTRATION_ERROR;
             addNotificationTextByFlag(flag);

@@ -2,7 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
-        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/input.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/web/index.xhtml</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/web/utils/WebSession.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/MobileAuthentificationServlet.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/checking.java</file>
         <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/utils/XmlUtils.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/servlets/input.java</file>
     </open-files>
 </project-private>

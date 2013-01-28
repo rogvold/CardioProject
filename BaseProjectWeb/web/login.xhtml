@@ -1,6 +1,6 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core">
     <h:head>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -54,6 +54,20 @@
             
         </script>
 
+        <style type="text/css">
+            #radioTable input{
+                height: 20px;
+            }
+            #radioTable label{
+                font-size: 12px;
+            }
+            #radioTable tbody tr td{
+                width: 100px;
+                text-align: center;
+                color: white;
+                font-size: 10px;
+            }
+        </style>
 
     </h:head>
     <h:body class="login">
@@ -97,6 +111,12 @@
                                 <h:inputText placeholder="password *" value="#{loginBean.password}" class="input-transparent" id="r_password" />
                                 <h:inputText placeholder="confirm password *" value="#{loginBean.confirmPassword}" class="input-transparent" id="r_confirm_password" />
 
+                                <div style="width: 100%; display: block;">
+                                    <h:selectOneRadio  value="#{loginBean.group}" layout="lineDirection" id="radioTable" style="margin: 0 auto;" >
+                                        <f:selectItem itemValue="0" itemLabel="Пользователь"  />
+                                        <f:selectItem itemValue="1" itemLabel="Доктор"   />
+                                    </h:selectOneRadio>
+                                </div>
                             </div>
 
                             <ppctu:commandButton oncomplete="notif();" update="notifSpan,loginFlag" styleClass="login-button" value="Зарегистрироваться" actionListener="#{loginBean.register()}" />

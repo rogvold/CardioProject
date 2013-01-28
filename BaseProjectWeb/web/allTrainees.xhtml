@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:ppctu="http://primefaces.prime.com.tr/ui">
+
+
+    <ui:composition template="templates/template.xhtml">
+
+        <ui:define name="javascripts">
+        </ui:define>
+
+        <ui:define name="topbar">
+            <c:if test="#{webSession.userGroup == 0}">
+                <ui:include src="templates/userBar.xhtml" />
+            </c:if>
+
+            <c:if test="#{webSession.userGroup == 1}">
+                <ui:include src="templates/trainerBar.xhtml" />
+            </c:if>
+        </ui:define>
+
+        <ui:define name="bodycontent">
+            <h:panelGroup rendered="#{webSession.userGroup == 0}" style="margin-top: 60px; ">
+                Вы обычный пользователь
+            </h:panelGroup>
+
+            <h:panelGroup id="traineesPanel" rendered="#{webSession.userGroup == 1}">
+                <div class="well well-w-top" style="margin-top: 60px; min-height: 300px;">
+                    <div class="top-well" >
+                        <h1 style="display: inline-block;">
+                            Все пользователи
+                        </h1>
+                        <div prependId="false" style="text-align: right; display: inline-block; margin: 3px; float: right;">
+                            <span class="btn btn-info" id="refreshPutton" onClick="document.location.reload(true)">обновить</span>
+                        </div>
+                    </div>
+
+                    <h:panelGrid columns="3" id="traineesGrid">
+                        <c:forEach items="#{traineesViewBean.newTrainees}" var="tr">
+
+                            <h:panelGroup class="span5 well-con well" style="display: block; padding: 1px; margin: 8px; min-height: 110px;">
+                                <!--                        friend requests-->
+                                <div class="top-well">
+                                    <span style="margin-left: 5px; width: 50%; display: inline-block;" >
+                                        #{tr.email} (#{tr.id})
+                                    </span>
+                                    <span style="margin-left: 5px; width: 40%; display: inline-block; color: #6C6F73;
+                                          font-size: 12px;
+                                          font-style: italic;" >
+                                        Хочет к вам
+                                    </span>
+                                </div>
+                                <div style="padding: 3px;">
+                                    <ul>
+                                        <li>
+                                            <span style="color: #08C;">ID:</span> #{tr.id}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Имя:</span> #{tr.firstName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Фамилия:</span>  #{tr.lastName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Отделение:</span> 
+                                            <span class="label label-inverse" >
+                                                <c:if test="#{empty tr.department}"><span style="color: #CE3636; font-weight: bold; text-shadow: 1px 1px 7px #CE3636;">Не указано</span></c:if>
+                                                <c:if test="#{not empty tr.department}">#{tr.department}</c:if>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div style="text-align: right;">
+                                    <a href="#{request.contextPath}/faces/profile.xhtml?id=#{tr.id}">Профиль</a>
+                                    <span style="color: #999;">|</span>
+                                    <h:form style="margin: 0px; text-align: right; padding-right: 5px; display: inline-block;">
+                                        <ppctu:commandLink style="color: #CE3636;" actionListener="#{traineesViewBean.rejectTrainee(tr.id)}" oncomplete="$('#refreshPutton').click();"  value="Отказать" />
+                                        <span style="color: #999;">|</span>
+                                        <ppctu:commandLink actionListener="#{traineesViewBean.confirmTrainee(tr.id)}" oncomplete="$('#refreshPutton').click();"  value="Принять" />
+                                    </h:form>
+                                </div>
+                            </h:panelGroup>
+                        </c:forEach>
+
+
+                        <c:forEach items="#{traineesViewBean.myTrainees}" var="tr">
+
+                            <h:panelGroup class="span5 well-con well" style="display: block; padding: 1px; margin: 8px; min-height: 110px;">
+                                <!--                        my friends -->
+                                <div class="top-well">
+                                    <span style="margin-left: 5px; width: 50%; display: inline-block;" >
+                                        #{tr.email} (#{tr.id})
+                                    </span>
+                                    <span style="margin-left: 5px; width: 40%; display: inline-block; color: #6C6F73;
+                                          font-size: 12px;
+                                          font-style: italic;" >
+                                        Ваш пациент
+                                    </span>
+                                </div>
+                                <div style="padding: 3px;">
+                                    <ul>
+                                        <li>
+                                            <span style="color: #08C;">ID:</span> #{tr.id}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Имя:</span> #{tr.firstName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Фамилия:</span>  #{tr.lastName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Отделение:</span> 
+                                            <span class="label label-inverse" >
+                                                <c:if test="#{empty tr.department}"><span style="color: #CE3636; font-weight: bold; text-shadow: 1px 1px 7px #CE3636;">Не указано</span></c:if>
+                                                <c:if test="#{not empty tr.department}">#{tr.department}</c:if>
+                                            </span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div style="text-align: right;">
+                                    <a href="#{request.contextPath}/faces/profile.xhtml?id=#{tr.id}">Профиль</a>
+                                    <span style="color: #999;">|</span>
+                                    <h:form style="margin: 0px; text-align: right; padding-right: 5px; display: inline-block;">
+                                        <ppctu:commandLink update=":traineesPanel" style="color:#CE3636;" actionListener="#{traineesViewBean.deleteTrainee(tr.id)}" value="Убрать из моих пациентов" />
+                                    </h:form>
+                                </div>
+                            </h:panelGroup>
+                        </c:forEach>
+
+
+                        <c:forEach items="#{traineesViewBean.notMyTrainees}" var="tr">
+
+                            <h:panelGroup class="span5 well-con well" style="display: block; padding: 1px; margin: 8px; min-height: 110px;">
+                                <!--                        not my friends-->
+                                <div class="top-well">
+                                    <span style="margin-left: 5px; width: 50%; display: inline-block;" >
+                                        #{tr.email} (#{tr.id})
+                                    </span>
+                                    <span style="margin-left: 5px; width: 40%; display: inline-block; color: #6C6F73;
+                                          font-size: 12px;
+                                          font-style: italic;" >
+                                        Не ваш пациент
+                                    </span>
+                                </div>
+                                <div style="padding: 3px;">
+                                    <ul>
+                                        <li>
+                                            <span style="color: #08C;">ID:</span> #{tr.id}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Имя:</span> #{tr.firstName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Фамилия:</span>  #{tr.lastName}
+                                        </li>
+                                        <li>
+                                            <span style="color: #08C;">Отделение:</span> 
+                                            <span class="label label-inverse" >
+                                                <c:if test="#{empty tr.department}"><span style="color: #CE3636; font-weight: bold; text-shadow: 1px 1px 7px #CE3636;">Не указано</span></c:if>
+                                                <c:if test="#{not empty tr.department}">#{tr.department}</c:if>
+                                            </span>
+                                        </li>
+                                    </ul>
+
+                                </div>    
+                                <div style="text-align: right; padding-right: 3px;">
+                                    <a href="#{request.contextPath}/faces/profile.xhtml?id=#{tr.id}">Профиль</a>
+                                    <span style="color: #999; ">|</span>
+                                    <c:if test="#{traineesViewBean.canBid(tr.id)}">
+                                        <h:form style="margin: 0px; text-align: right; padding-right: 5px; display: inline-block;">
+                                            <ppctu:commandLink update=":traineesPanel" actionListener="#{traineesViewBean.bidTraineeFriendRequest(tr.id)}" value="Добавить в пациенты"/>
+                                        </h:form>
+                                    </c:if>
+                                    <c:if test="#{!traineesViewBean.canBid(tr.id)}">
+
+                                        <span style="color: #6C6F73;
+                                              font-size: 12px;
+                                              font-style: italic;">Вы уже подали заявку </span>
+                                    </c:if>
+                                </div>
+                            </h:panelGroup>
+                        </c:forEach>
+
+
+                    </h:panelGrid>
+                </div>
+
+
+            </h:panelGroup>
+        </ui:define>
+
+        <ui:define name="additional">
+
+        </ui:define>
+
+
+
+    </ui:composition>
+
+</html>

@@ -58,7 +58,7 @@ public class MobileAuthentificationServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
 
-        String message = "";
+        String message = "\"\"";
         String resp = "";
         try {
             String jsonString = request.getParameter(INPUT_PARAMETER_FIELD_NAME);
@@ -88,7 +88,7 @@ public class MobileAuthentificationServlet extends HttpServlet {
                 if (purpose.equals(REGISTER_PURPOSE_VALUE)) {
                     String email = JsonUtils.getStringFromJson(jsonString, EMAIL_PARAM_NAME);
                     String password = JsonUtils.getStringFromJson(jsonString, PASSWORD_PARAM_NAME);
-                    User u = userMan.registerNewUser(email, password, "", "");
+                    User u = userMan.registerNewUser(email, password, "", "", User.USER);
                     if (u != null) {
                         resp = YES;
                     } else {

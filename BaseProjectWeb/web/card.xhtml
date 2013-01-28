@@ -1,98 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
-    <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <meta charset="utf-8"/>
-        <title>Twitter Bootstrap</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <link href="../css/bootstrap.css" rel="stylesheet" />
-        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
-        <link href="../css/Common.css" rel="stylesheet" />
-
-        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
-
-        <script src="./js/jquery.min.js"></script>
-        <script src="../js/jquery.flot.js"></script>
-        <script src="./js/jquery.flot.selection.js"></script>
-        <script src="./js/jquery.flot.pie.js"></script>
-    </h:head>
-    <h:body>
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core" 
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:ppctu="http://primefaces.prime.com.tr/ui">
 
 
-        <div class="container">
+    <ui:composition template="templates/template.xhtml">
+
+        <ui:define name="javascripts">
+        </ui:define>
+
+        <ui:define name="topbar">
+            <c:if test="#{webSession.userGroup == 0}">
+                <ui:include src="templates/userBar.xhtml" />
+            </c:if>
+
+            <c:if test="#{webSession.userGroup == 1}">
+                <ui:include src="templates/trainerBar.xhtml" />
+            </c:if>
+        </ui:define>
+
+        <ui:define name="bodycontent">
+            <div class="well well-w-top" style="margin-top: 60px;">
+
+                <div class="well-con height">
+                    <div class="top-well" style="top:200px;">
+                        <h1><i></i>Личная карточка</h1>
+                    </div>
+                    <div class="well-content">
+                        <section id="user-profile">
+                            <div class="profile-container">
+                                <div class="profile-img pull-left thumbnail">
+                                    <img src="./images/face.png" width="101" height="110" alt=""/>
+                                </div>
+                                <div class="profile-form span6 pull-left">
+                                    <h:form prependId="false">
+                                        <fieldset>
+                                            <div class="control-group">
+                                                <label>Имя</label>
+
+                                                <h:inputText value="#{userCardBean.card.firstName}" />
+                                            </div>
+                                            <div class="control-group">
+                                                <label>Фамилия</label>
+                                                <h:inputText value="#{userCardBean.card.lastName}" />
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label>Отделение</label>
+                                                <h:inputText value="#{userCardBean.user.department}" />
+                                            </div>
+
+                                            <div class="control-group">
+                                                <label>Обо мне</label>
+                                                <h:inputTextarea value="#{userCardBean.card.aboutMe}" />
+                                            </div>
+
+                                            <c:if test="#{webSession.userGroup == 0}">
+                                                <div class="control-group">
+                                                    <label>Диагнозы</label>
+                                                    <h:inputTextarea value="#{userCardBean.card.diadnoses}" />
+                                                </div>
 
 
-            <section id="top-bar">
-                <div class="navbar navbar-fixed-top">
-                    <div class="navbar-inner">
-                        <div class="container">
-                            <ul class="nav">
-                                <li>
-                                    <a href="#{request.contextPath}/faces/index.xhtml">
-                                        Dashboard 
-                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
-                                            <span class="badge badge-success">!</span>
-                                        </c:if>
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
-                                        Сессии
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="#{request.contextPath}/faces/card.xhtml">
-                                        Карточка
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="javascript:void()">
-                                        FAQ
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                                <li>
-                                    <a href="javascript:void()">
-                                        Components
-                                    </a>
-                                </li>
-                                <li class="divider-vertical"></li>
-                            </ul>
-                            <form class="navbar-search pull-left">
-                                <input type="text" class="search-query" placeholder="Search" />
-                            </form>
-                            <ul class="nav pull-right">
-                                <li>
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
+                                                <div class="control-group">
+                                                    <label>Дополнительно</label>
+                                                    <h:inputTextarea value="#{userCardBean.card.description}" />
+                                                </div>
+                                            </c:if>
+                                            <div class="divider"></div>
+                                            <div class="control-group">
+                                                <ppctu:commandButton oncomplete="$('#confirmation_dialog').show('');" actionListener="#{userCardBean.updateCard()}" value="Сохранить информацию" styleClass="btn pull-right btn-success" />
 
-                                    <!--                                    <a href="#" >-->
-
-                                    <!--                                    </a>-->
-                                    <ul class="dropdown-menu">
-                                        <li><a href="#">Profile</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#" >
-                                                <h:form>
-                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
-                                                </h:form>
-                                            </a>
-                                            <!--                                            <a href="">Logout</a>-->
-                                        </li>
-                                    </ul>
-                                </li>
-                                <h:form style="position: absolute; right: -50px; top:8px;">
-                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
-                                </h:form>
-                            </ul>
-                        </div>
+                                            </div>
+                                        </fieldset>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
-            </section>
+            </div>
+        </ui:define>
+
+        <ui:define name="additional">
+            <h:panelGroup id="callbackSpan" style="display: none;" >
+                <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
+                <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
+            </h:panelGroup>
 
             <h:panelGroup id="confirmation_dialog" style="
                           text-align: center;
@@ -109,86 +108,10 @@
                     <div class="btn btn-success" onclick="$('#confirmation_dialog').hide('toggle');" > OK </div>
                 </div>
             </h:panelGroup>
-
-
-            <section id="body-contnet">
-                <div class="well well-w-top" style="margin-top: 60px;">
-
-                    <div class="well-con height">
-                        <div class="top-well" style="top:200px;">
-                            <h1><i></i>Личная карточка</h1>
-                        </div>
-                        <div class="well-content">
-                            <section id="user-profile">
-                                <div class="profile-container">
-                                    <div class="profile-img pull-left thumbnail">
-                                        <img src="./images/face.png" width="101" height="110" alt=""/>
-                                    </div>
-                                    <div class="profile-form span6 pull-left">
-                                        <h:form prependId="false">
-                                            <fieldset>
-                                                <div class="control-group">
-                                                    <label>Имя</label>
-
-                                                    <h:inputText value="#{userCardBean.card.firstName}" />
-                                                </div>
-                                                <div class="control-group">
-                                                    <label>Фамилия</label>
-                                                    <h:inputText value="#{userCardBean.card.lastName}" />
-                                                </div>
-
-                                                <div class="control-group">
-                                                    <label>Диагнозы</label>
-
-                                                    <h:inputTextarea value="#{userCardBean.card.diadnoses}" />
-
-                                                </div>
+        </ui:define>
 
 
 
-                                                <div class="control-group">
-                                                    <label>Дополнительно</label>
-                                                    <h:inputTextarea value="#{userCardBean.card.description}" />
+    </ui:composition>
 
-                                                </div>
-
-                                                <div class="divider"></div>
-                                                <div class="control-group">
-                                                    <ppctu:commandButton oncomplete="$('#confirmation_dialog').show('');" actionListener="#{userCardBean.updateCard()}" value="Сохранить информацию" styleClass="btn pull-right btn-success" />
-
-                                                </div>
-                                            </fieldset>
-                                        </h:form>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-
-
-
-
-        <section id="footer">
-            <div class="footer">
-                <div class="container">
-                    <div class="copyright">
-                        Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <h:panelGroup id="callbackSpan" style="display: none;" >
-            <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
-            <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
-        </h:panelGroup>
-
-
-
-
-    </h:body>
 </html>
