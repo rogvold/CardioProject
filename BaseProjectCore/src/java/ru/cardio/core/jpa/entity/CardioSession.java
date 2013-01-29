@@ -14,6 +14,8 @@ public class CardioSession implements Serializable {
     public static final int STATUS_CURRENT = 1;
     public static final int STATUS_OLD = 0;
     
+    public static final long USER_ACTIVE_INTERVAL = 1000*60*5;
+    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

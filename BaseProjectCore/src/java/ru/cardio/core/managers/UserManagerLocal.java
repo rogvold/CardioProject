@@ -32,6 +32,8 @@ public interface UserManagerLocal {
     
     public void updateInfo(Long userId, String fName, String lName, String dep, String newStatusMessage);
     
+    public boolean userSensorIsWorking(Long userId);
+    
 //    public List<User> getTrainersOfUser(Long traineeId);
 //    public List<User> getTraineesOfser(Long trainerId);
 //    

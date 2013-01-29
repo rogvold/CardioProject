@@ -339,16 +339,36 @@ public class UserManager implements UserManagerLocal {
     @Override
     public void updateInfo(Long userId, String fName, String lName, String dep, String newStatusMessage) {
         User user = getUserById(userId);
-        if (user == null) return;
-        if (newStatusMessage != null){
+        if (user == null) {
+            return;
+        }
+        if (newStatusMessage != null) {
             user.setStatusMessage(newStatusMessage);
             user.setStatusMessageChangingDate(new Date());
         }
-        if (dep!=null){
+        if (dep != null) {
             user.setDepartment(dep);
         }
         user.setFirstName(fName);
         user.setLastName(lName);
         em.merge(user);
+    }
+
+    @Override
+    public boolean userSensorIsWorking(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        try {
+            Date now = new Date();
+            User user = getUserById(userId);
+            if (now.getTime() - user.getLastDataRecievedDate().getTime() < CardioSession.USER_ACTIVE_INTERVAL) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+
+        return false;
+
     }
 }

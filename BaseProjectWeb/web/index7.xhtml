@@ -432,21 +432,19 @@
                             <li class="divider-vertical"></li>
                             <li>
                                 <a href="#{request.contextPath}/faces/card.xhtml">
-                                    Карточка
+                                    Мой профиль
                                 </a>
                             </li>
                             <li class="divider-vertical"></li>
                             <li>
-                                <a href="javascript:void()">
-                                    FAQ
+                                <a href="#{request.contextPath}/faces/myTrainers.xhtml">
+                                    Мои докторы
+                                    <c:if test="#{friendsBean.hasNewFriends()}">
+                                        <span class="badge badge-warning">#{friendsBean.newFriendsAmount}</span>
+                                    </c:if>
                                 </a>
-                            </li>
-                            <li class="divider-vertical"></li>
-                            <li>
-                                <a href="javascript:void()">
-                                    Components
-                                </a>
-                            </li>
+                            </li> 
+
                             <li class="divider-vertical"></li>
                         </ul>
 

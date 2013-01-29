@@ -49,11 +49,12 @@ public class User implements Serializable {
     private int status;
     @Column
     private String statusMessage;
-
     @Column
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     private Date statusMessageChangingDate;
-    
+    @Column
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    private Date lastDataRecievedDate;
     @Column
     private String department;
 
@@ -145,8 +146,16 @@ public class User implements Serializable {
         this.statusMessageChangingDate = statusMessageChangingDate;
     }
 
+    public Date getLastDataRecievedDate() {
+        return lastDataRecievedDate;
+    }
+
+    public void setLastDataRecievedDate(Date lastDataRecievedDate) {
+        this.lastDataRecievedDate = lastDataRecievedDate;
+    }
     
     
+
     @Override
     public int hashCode() {
         int hash = 0;

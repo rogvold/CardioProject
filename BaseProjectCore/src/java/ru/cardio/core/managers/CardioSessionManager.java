@@ -204,7 +204,10 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
 
         CardioSession currentCs = getCurrentCardioSession(userId);
-
+        User user = userMan.getUserById(userId);
+        user.setLastDataRecievedDate(new Date());
+        em.merge(user);
+        
         if (currentCs == null) {
             addRatesCreatingNewSession(userId, ratesList, startDate);
             return;
