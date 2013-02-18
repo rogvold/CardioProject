@@ -22,8 +22,8 @@ import ru.cardio.core.utils.CardioUtils;
 public class CardioSessionManager implements CardioSessionManagerLocal {
 
     public static final String DELIMETER = ";";
-    public static final int SESSION_TIMEOUT = 15000;
-    public static final boolean SESSION_TIMEOUT_MODE = false;
+    public static final int SESSION_TIMEOUT = 120000;
+    public static final boolean SESSION_TIMEOUT_MODE = true;
     public static final boolean SESSION_CREATION_FLAG_MODE = false;
     @PersistenceContext(unitName = "BaseProjectCorePU")
     EntityManager em;
@@ -50,7 +50,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             d.setTime(currRate.getDuration() + currRate.getStartDate().getTime());
         }
 
-        System.out.println("getRatesInCardioSession: rates = " + rates);
+//        System.out.println("getRatesInCardioSession: rates = " + rates);
 
         if (amount == -1) {
             return rates;
@@ -64,7 +64,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
 
     @Override
     public CardioSession getCardioSessionById(Long sessionId) {
-        System.out.println("getCardioSessionById: sessionID = " + sessionId);
+//        System.out.println("getCardioSessionById: sessionID = " + sessionId);
         try {
             return (sessionId == null) ? null : em.find(CardioSession.class, sessionId); // sorry
         } catch (Exception e) {
@@ -81,7 +81,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         //TODO: erase || requestOwnerId == null
         if (cs.getUserId().equals(requestOwnerId) || requestOwnerId == null) {
-            System.out.println("getMyRatesInCardioSession: sessionId = " + sessionId + " ; requestOwnerId = " + requestOwnerId);
+//            System.out.println("getMyRatesInCardioSession: sessionId = " + sessionId + " ; requestOwnerId = " + requestOwnerId);
             return getRatesInCardioSession(sessionId, amount);
         } else {
             return null;
@@ -108,14 +108,14 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         return s;
     }
 
-    private List<String> getKubiosDataOfCardioSessionStringList(List<Rate> list){
+    private List<String> getKubiosDataOfCardioSessionStringList(List<Rate> list) {
         List<String> l = new ArrayList();
-        for (Rate r: list){
+        for (Rate r : list) {
             l.add(new Integer(r.getDuration()).toString());
         }
         return l;
     }
-    
+
     @Override
     public List<String> getKubiosDataOfRatesInCardioSessionBySessionId(Long sessionId, int amount, Long requestOwnerId) {
         List<Rate> list = getMyRatesInCardioSession(sessionId, amount, requestOwnerId);
@@ -139,8 +139,24 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         return list;
     }
 
+    private boolean sessionWithThisStartDateExists(Date start) {
+        String jpql = "select c from CardioSession c where c.startDate = :start";
+        Query q = em.createQuery(jpql).setParameter("start", start);
+        List<CardioSession> list = q.getResultList();
+        if (list == null) {
+            return false;
+        }
+        if (list.size() > 0) {
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate) {
+        if (sessionWithThisStartDateExists(startDate)) {
+            return;
+        }
         CardioSession cs = new CardioSession();
         cs.setStartDate(startDate);
         String s = "";
@@ -172,7 +188,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             Query q = em.createQuery("select c from CardioSession c where c.status=:currStat and c.userId = :uId").setParameter("currStat", CardioSession.STATUS_CURRENT).setParameter("uId", userId);
             return (CardioSession) q.getSingleResult();
         } catch (NoResultException e) {
-            System.out.println("getCurrentCardioSession: exc = " + e);
+//            System.out.println("getCurrentCardioSession: exc = " + e);
             return null;
         }
     }
@@ -207,7 +223,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         User user = userMan.getUserById(userId);
         user.setLastDataRecievedDate(new Date());
         em.merge(user);
-        
+
         if (currentCs == null) {
             addRatesCreatingNewSession(userId, ratesList, startDate);
             return;

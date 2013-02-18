@@ -84,10 +84,10 @@
                                                 </ul>
                                             </td>
                                             <td>
-                                                <c:if test="#{monitorBean.activeSencor(tr.id)}">
+                                                <c:if test="#{monitorBean.activeSensor(tr.id)}">
                                                     <img src="#{request.contextPath}/images/active_sensor.gif" style="width: 100px;;" />
                                                 </c:if>
-                                                <c:if test="#{!monitorBean.activeSencor(tr.id)}">
+                                                <c:if test="#{!monitorBean.activeSensor(tr.id)}">
                                                     <img src="#{request.contextPath}/images/disconnect.ico" style="width: 100px; height: 70px;" />
                                                 </c:if>
                                             </td>

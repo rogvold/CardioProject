@@ -45,6 +45,10 @@
         <servlet-name>MobileAuthentificationServlet</servlet-name>
         <servlet-class>ru.cardio.servlets.MobileAuthentificationServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>sync</servlet-name>
+        <servlet-class>ru.cardio.servlets.SyncServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -72,6 +76,10 @@
     <servlet-mapping>
         <servlet-name>MobileAuthentificationServlet</servlet-name>
         <url-pattern>/mobileauth</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sync</servlet-name>
+        <url-pattern>/sync</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

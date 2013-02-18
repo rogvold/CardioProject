@@ -19,7 +19,7 @@ public class MonitorBean {
     
     
     
-    public boolean isActiveSencor(Long userId){
+    public boolean activeSensor(Long userId){
         return userMan.userSensorIsWorking(userId);
     }
     
