@@ -13,14 +13,11 @@ import ru.cardio.indicators.utils.Square;
  *
  * @author rogvold, Alexanter Taraymovich, Kirill Y. Tsibriy
  */
-
 public class SpectrumIndicatorsService extends AbstractIndicatorsService {
 
     public SpectrumIndicatorsService() {
     }
 
-    
-    
     public SpectrumIndicatorsService(List<Integer> intervals) {
         super(intervals);
     }
@@ -45,8 +42,23 @@ public class SpectrumIndicatorsService extends AbstractIndicatorsService {
     }
 
     public double getULFPercents() {
-                List<Periodogram> periodogram = training.evaluate(new Lomb());
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
         return new Square(periodogram, 0, 0.0033).Calculate();
+    }
+
+    public double getSdPercents() {
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0.1, 0.5).Calculate();
+    }
+
+    public double getS1Percents() {
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0.0333, 0.1).Calculate();
+    }
+
+    public double getS2Percents() {
+        List<Periodogram> periodogram = training.evaluate(new Lomb());
+        return new Square(periodogram, 0.0167, 0.0333).Calculate();
     }
 
     public double getTP() {
@@ -55,6 +67,6 @@ public class SpectrumIndicatorsService extends AbstractIndicatorsService {
     }
 
     public double getIC() {
-        return (getHFPercents() + getLFPercents())/getVLFPercents();
+        return (getHFPercents() + getLFPercents()) / getVLFPercents();
     }
 }

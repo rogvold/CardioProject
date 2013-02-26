@@ -12,6 +12,26 @@
     <ui:composition template="templates/template.xhtml">
 
         <ui:define name="javascripts">
+
+            <script>
+                function getChecked(){
+                    var s = "";
+                    var array = new Array();
+                    $('input[type=checkbox]:checked').each(function() {
+                        array.push($(this).val());
+                        //                        checkValues.push($(this)val());
+                    });
+                    if (array.length == 0){
+                        return "";
+                    }
+                    s = array[0];
+                    for (var i=1;-i > - array.length; i++){
+                        s+="_"+array[i];
+                    }
+                    return s;
+                }
+            </script>
+
         </ui:define>
 
         <ui:define name="topbar">
@@ -58,6 +78,16 @@
                                           font-size: 12px;
                                           font-style: italic;" >
                                         Ваш пациент
+                                    </span>
+                                    <span>
+                                        <form style="display: inline-block; margin: 0;">
+                                            <c:if test="#{monitorBean.activeSensor(tr.id)}">
+                                                <input class="view_state_checkbox" value="_#{tr.id}" type="checkbox" checked="checked" />
+                                            </c:if>
+                                            <c:if test="#{!monitorBean.activeSensor(tr.id)}">
+                                                <input class="view_state_checkbox" value="#{tr.id}" type="checkbox" />
+                                            </c:if>
+                                        </form>
                                     </span>
                                 </div>
                                 <div style="padding: 3px;">
@@ -112,6 +142,12 @@
 
 
                     </h:panelGrid>
+
+                    <div style="display: block; width: 100%; ">
+                        <a style="float: right; padding-right: 20px; cursor: pointer;" onclick="window.location.href = '#{request.contextPath}/faces/viewstate.xhtml?users=' + getChecked()">
+                            Перейти к просмотру состояния выделенных пользователей
+                        </a>
+                    </div>
                 </div>
 
 

@@ -68,6 +68,8 @@ public interface UserManagerLocal {
     
     public List<User> getUsersExceptFor(int role, Object... etrainers);
     
-    public CardioSession getLastCardioSession(Long userId);
+    public Long getLastCardioSessionId(Long userId);
+    
+    
     
 }

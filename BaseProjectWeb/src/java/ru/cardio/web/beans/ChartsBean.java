@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.web.beans;
 
 import javax.annotation.PostConstruct;
@@ -9,6 +5,7 @@ import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import ru.cardio.analysis.BaevskyAnalysisWrapperService;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.core.managers.IndicatorsManagerLocal;
@@ -65,11 +62,16 @@ public class ChartsBean {
         MyPlot plot = indMan.getPlotOfParameters(sessionId, new StatisticsIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
         return plot == null ? "" : plot.getJsonString();
     }
-    
-    public String plotSpectralJsonString(String paramName) throws Exception{
+
+    public String plotBaevskyJsonString(String paramName) throws Exception {
+        System.out.println("paramName = " + paramName);
+        MyPlot plot = indMan.getPlotOfParameters(sessionId, new BaevskyAnalysisWrapperService(), paramName, ACCURACY_INTERVAL * 1000);
+        return plot == null ? "" : plot.getJsonString();
+    }
+
+    public String plotSpectralJsonString(String paramName) throws Exception {
         System.out.println("paramName = " + paramName);
         MyPlot plot = indMan.getPlotOfParameters(sessionId, new SpectrumIndicatorsService(), paramName, ACCURACY_INTERVAL * 1000);
         return plot == null ? "" : plot.getJsonString();
     }
-    
 }

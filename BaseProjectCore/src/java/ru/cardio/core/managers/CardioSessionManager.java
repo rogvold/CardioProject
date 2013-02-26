@@ -13,6 +13,7 @@ import ru.cardio.core.entity.Rate;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.jpa.entity.User;
 import ru.cardio.core.utils.CardioUtils;
+import ru.cardio.filters.BaevskyFilter;
 
 /**
  *
@@ -25,6 +26,9 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
     public static final int SESSION_TIMEOUT = 120000;
     public static final boolean SESSION_TIMEOUT_MODE = true;
     public static final boolean SESSION_CREATION_FLAG_MODE = false;
+    
+    public static final boolean BAEVSKY_FILTER_ENABLED = true;
+    
     @PersistenceContext(unitName = "BaseProjectCorePU")
     EntityManager em;
     @EJB
@@ -37,6 +41,10 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return null;
         }
         List<Integer> list = CardioUtils.getIntervalsFromString(cs.getRates(), DELIMETER);
+        if (BAEVSKY_FILTER_ENABLED){
+            list = BaevskyFilter.getInstance().filterRates(list);
+        }
+        
         List<Rate> rates = new ArrayList();
 
         Date d = new Date();

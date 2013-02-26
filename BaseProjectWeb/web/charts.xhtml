@@ -32,10 +32,11 @@
                     return;
                 }
                 plotINData();
-                plotAMoPercentsData();
-                plotPNN50PercentsData();
-                plotBPData();
-                plotRRNNData();
+//                plotAMoPercentsData();
+//                plotPNN50PercentsData();
+//                plotBPData();
+//                plotRRNNData();
+//                plotPData();
             })
 
 
@@ -62,6 +63,12 @@
                 json = JSON.parse('#{chartsBean.plotStisJsonString("RRNN")}');
                 data = eval(json.data);
                 $.plot("#placeholder_RRNN", [data] , options);
+            }
+            
+            function plotPData(){
+                json = JSON.parse('#{chartsBean.plotBaevskyJsonString("P")}');
+                data = eval(json.data);
+                $.plot("#placeholder_P", [data] , options);
             }
             
             function plotPNN50PercentsData(){
@@ -161,35 +168,41 @@
                             </div>
                             <div class="well-content">
                                 <!--                                <div id="placeholder" style="padding-top: 0px; padding-right: 0px; padding-bottom: 0px; padding-left: 0px; position: relative; "><canvas class="base" width="1140" height="300"></canvas><canvas class="overlay" width="1140" height="300" style="position: absolute; left: 0px; top: 0px; "></canvas><div class="tickLabels" style="font-size:smaller"><div class="xAxis x1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:center;left:-11px;top:282px;width:76px">0</div><div class="tickLabel" style="position:absolute;text-align:center;left:71px;top:282px;width:76px">1</div><div class="tickLabel" style="position:absolute;text-align:center;left:153px;top:282px;width:76px">2</div><div class="tickLabel" style="position:absolute;text-align:center;left:235px;top:282px;width:76px">3</div><div class="tickLabel" style="position:absolute;text-align:center;left:318px;top:282px;width:76px">4</div><div class="tickLabel" style="position:absolute;text-align:center;left:400px;top:282px;width:76px">5</div><div class="tickLabel" style="position:absolute;text-align:center;left:482px;top:282px;width:76px">6</div><div class="tickLabel" style="position:absolute;text-align:center;left:564px;top:282px;width:76px">7</div><div class="tickLabel" style="position:absolute;text-align:center;left:646px;top:282px;width:76px">8</div><div class="tickLabel" style="position:absolute;text-align:center;left:728px;top:282px;width:76px">9</div><div class="tickLabel" style="position:absolute;text-align:center;left:810px;top:282px;width:76px">10</div><div class="tickLabel" style="position:absolute;text-align:center;left:893px;top:282px;width:76px">11</div><div class="tickLabel" style="position:absolute;text-align:center;left:975px;top:282px;width:76px">12</div><div class="tickLabel" style="position:absolute;text-align:center;left:1057px;top:282px;width:76px">13</div></div><div class="yAxis y1Axis" style="color:#545454"><div class="tickLabel" style="position:absolute;text-align:right;top:243px;right:1120px;width:20px">-1.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:187px;right:1120px;width:20px">-0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:131px;right:1120px;width:20px">0.0</div><div class="tickLabel" style="position:absolute;text-align:right;top:74px;right:1120px;width:20px">0.5</div><div class="tickLabel" style="position:absolute;text-align:right;top:18px;right:1120px;width:20px">1.0</div></div></div></div>-->
+
+<!--                                <h1 id="P_h1">P</h1>
+                                <div id="placeholder_P" style="width: 100%;
+                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
+                                </div>-->
+
                                 <h1 id="IN_h1">IN</h1>
                                 <div id="placeholder_IN" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
                                 </div>
-
+<!--
                                 <h1 id="RRNN_h1">HF, LF, VLF, ULF </h1>
                                 <div id="placeholder_spectrum" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                </div>
+                                </div>-->
 
-                                <h1 id="AmoPercents_h1">AMoPercents</h1>
+<!--                                <h1 id="AmoPercents_h1">AMoPercents</h1>
                                 <div id="placeholder_AMoPercents" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                </div>
+                                </div>-->
 
-                                <h1 id="PNN50_h1">PNN50</h1>
+<!--                                <h1 id="PNN50_h1">PNN50</h1>
                                 <div id="placeholder_PNN50" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                </div>
+                                </div>-->
 
-                                <h1 id="BP_h1">BP (Вариационный размах)</h1>
+<!--                                <h1 id="BP_h1">BP (Вариационный размах)</h1>
                                 <div id="placeholder_BP" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                </div>
+                                </div>-->
 
-                                <h1 id="RRNN_h1">RRNN (Среднее значение)</h1>
+<!--                                <h1 id="RRNN_h1">RRNN (Среднее значение)</h1>
                                 <div id="placeholder_RRNN" style="width: 100%;
                                      height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
-                                </div>
+                                </div>-->
 
 
                                 <!--                                <div class="statistics-items">

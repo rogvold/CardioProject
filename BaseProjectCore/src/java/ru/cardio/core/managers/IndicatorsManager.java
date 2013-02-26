@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import ru.cardio.core.entity.Rate;
+import ru.cardio.core.jpa.entity.Constant;
 import ru.cardio.graphics.MyPlot;
 import ru.cardio.graphics.MyPoint;
 import ru.cardio.indicators.*;
@@ -16,9 +17,14 @@ import ru.cardio.indicators.*;
 @Stateless
 public class IndicatorsManager implements IndicatorsManagerLocal {
 
+    
+    
     @EJB
     CardioSessionManagerLocal cardMan;
 
+    @EJB
+    ConstantManagerLocal cMan;
+    
     @Override
     public MyPlot getPlotOfParameters(Long sessionId, AbstractIndicatorsService a, String indicatorName, long msStep) throws Exception {
         if (sessionId == null) {
@@ -26,9 +32,16 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
         }
         List<Rate> rates = cardMan.getRatesInCardioSession(sessionId, -1);
         List<MyPoint> points = new ArrayList();
-
-        System.out.println("getPlotOfParameters:  rates = " + rates);
-
+        String dur = cMan.getConstantValueByName(Constant.WINDOW_DURATION_NAME);
+        if ( dur != null){
+            a.setDuration(Integer.parseInt(dur) * 1000);
+        }
+        
+        
+//        System.out.println("getPlotOfParameters:  rates = " + rates);
+        System.out.println("getPlotOfParameters: step = " + msStep + " duration = " + a.getDuration());
+        
+        
         int beginIndex = 0;
         int sum = 0;
         for (int i = 0; i < rates.size(); i++) {

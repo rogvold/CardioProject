@@ -78,8 +78,15 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public CardioSession getLastCardioSession(Long userId) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Long getLastCardioSessionId(Long userId) {
+        Query q = em.createQuery("select cs from CardioSession cs where (cs.userId = :userId ) and (cs.status = :status)")
+                .setParameter("userId", userId)
+                .setParameter("status", CardioSession.STATUS_CURRENT);
+        try {
+            return ((CardioSession) q.getSingleResult()).getId();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

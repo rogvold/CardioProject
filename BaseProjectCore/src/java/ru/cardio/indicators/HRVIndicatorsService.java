@@ -20,8 +20,6 @@ public class HRVIndicatorsService extends AbstractIndicatorsService {
     public HRVIndicatorsService() {
     }
 
-    
-    
     public double getAMoPercents() {
         List<Integer> list = getIntervalsInDuration();
         Histogram h = new Histogram(list.size()).init();
@@ -37,7 +35,7 @@ public class HRVIndicatorsService extends AbstractIndicatorsService {
         double bp = getBP();
         double amo = getAMoPercents();
         double mo = getMo();
-        return Math.floor((amo * 1000* 1000 / (2 * bp * mo))  * 100 ) / 100.0;
+        return Math.floor((amo * 1000 * 1000 / (2 * bp * mo)) * 100) / 100.0;
     }
 
     public double getBP() {
