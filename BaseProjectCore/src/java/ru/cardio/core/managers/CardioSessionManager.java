@@ -69,6 +69,16 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return rates.subList(0, amount);
         }
     }
+    
+    private Double getPulse(Long sessionId){
+        List<Rate> rates = getRatesInCardioSession(sessionId, -1);
+        Double p = 0.0;
+        for (int i = rates.size() - 3; i < rates.size(); i++){
+            p+=rates.get(i).getDuration();
+        }
+        p = (180000.0 / p);
+        return Math.floor(p);
+    }
 
     @Override
     public CardioSession getCardioSessionById(Long sessionId) {
@@ -363,5 +373,10 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
     public boolean userHasActiveSession(Long userId) {
         Long l = getCurrentCardioSessionId(userId);
         return l == null ? false : true;
+    }
+
+    @Override
+    public Double getCurrentPulse(Long sessionId) {
+        return getPulse(sessionId);
     }
 }

@@ -69,7 +69,7 @@ public class IndicatorsManager implements IndicatorsManagerLocal {
                 list.add(rates.get(i).getDuration());
             }
             a.setIntervals(list);
-            System.out.println("calculating indicator " + indicatorName + " for intervals = " + list);
+            System.out.println("calculating indicator " + indicatorName );
 
             points.add(new MyPoint(rates.get(curr).getStartDate().getTime(), a.parameter(indicatorName)));
 

@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta charset="utf-8"/>
+        <title>Twitter Bootstrap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="../css/bootstrap.css" rel="stylesheet" />
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="../css/Common.css" rel="stylesheet" />
+        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
+        <script src="./js/jquery.min.js"></script>
+        <script src="../js/jquery.flot.js"></script>
+        <script src="./js/jquery.flot.selection.js"></script>
+        <script src="./js/jquery.flot.pie.js"></script>
+        <script src="./js/jquery.flot.threshold.js"></script>
+        <script src="./js/jquery.flot.threshold.plugin.js"></script>
+        <!--        <script src="./js/jquery.js"></script>-->
+
+        <script type="text/javascript">
+            
+            var currentIN = 250;
+            var json=null;
+            
+            function getStateClass(index){
+
+                if (  ( index > 150)){
+                    return "progress-danger";
+                }
+                if ( (index >  80) &amp;&amp; ( -index > -150)){
+                    return "progress-success";
+                }
+                if ( (-index > - 80)){
+                    return "progress-info";
+                }
+            }
+            
+            function getPercents(index){
+                if (index > 500) index = 500;
+                return  (index / 5.0);
+            }
+            1
+            
+            function calculatePulse(rates){
+                if (rates == null) return null;
+                var n = rates.length - 1;
+                return (180000.0 / (0.0 + rates[n][1] + rates[n-1][1] + rates[n-2][1]));
+            }
+            
+            var options = {
+                series: { shadowSize: 0, color : 'white'},
+                yaxis: { color: '#92d5ea' },
+                xaxis: { mode: "time", color: '#92d5ea'}
+            };
+            
+            function getUrlVars()
+            {
+
+                var vars = [], hash;
+
+                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&amp;');
+
+                for(var i = 0; -i > -hashes.length; i++)
+
+                {
+
+                    hash = hashes[i].split('=');
+
+                    vars.push(hash[0]);
+
+                    vars[hash[0]] = hash[1];
+
+                }
+
+                return vars;
+            }
+
+            $(function(){
+                if (#{chartsBean.plotHRVJsonString("IN") == ""}){
+                    alert("not anough data");
+                    //                    window.location.href = '#{request.contextPath}/faces/index.xhtml';
+                    return;
+                }
+                plotINData();
+                setInterval(function(){
+                    update();
+                },5000);
+                //                plotINData();
+            })
+
+            function update(){
+                $.ajax({
+                    type: "POST",
+                    url: "indicatorplot",
+                    data: { param: "IN"
+                        ,
+                        sessionId: getUrlVars()["id"]}
+                }).done(function( msg ) {
+                    json = JSON.parse(msg);
+                    plotINData();
+                    
+                });
+                
+                $.ajax({
+                    type: "POST",
+                    url: "pulse",
+                    data: {sessionId: getUrlVars()["id"]}
+                }).done(function( msg ) {
+                    $('#myPulse').html(msg);
+                    
+                });
+            }
+
+
+            function plotINData(){
+       
+                //              
+                if (json == null) {
+//                    alert('не достаточно данных');
+                    return;
+                    
+                };
+                data = eval(json.data);
+                currentIN = data[data.length - 1][1];
+                
+                $('#myProgress').attr('class', 'progress progress-striped  ' + getStateClass(currentIN));
+                $('#myProgress .bar').css('width',getPercents(currentIN) + '%');
+                $('#currentTension').html(Math.floor(currentIN));
+                $('#currentTension').attr('class',getStateClass(currentIN));
+                
+                var opt = [ {
+                        data: data,
+                        
+                        constraints: [      
+
+                            {
+                                threshold: {below:150},
+                                color: "#99FF33"
+                            },
+                            {
+                                threshold: {below:80},
+                                color: "#CCFF99"
+                            }
+                            ,
+                            {
+                                threshold: {above:150},
+                                color: "#FF6633"
+                            }        
+                        ]
+                    } ] ;
+                
+                $.plot("#placeholder_IN", opt , options);
+            }
+
+            
+        </script>
+    </h:head>
+    <h:body>
+        <div class="container">
+
+            <section id="top-bar">
+                <div class="navbar navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#{request.contextPath}/faces/index.xhtml">
+                                        Dashboard 
+                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
+                                            <span class="badge badge-success">!</span>
+                                        </c:if>
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
+                                        Sessions
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="#{request.contextPath}/faces/card.xhtml">
+                                        Карточка
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="javascript:void()">
+                                        FAQ
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="javascript:void()">
+                                        Components
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                            </ul>
+                            <!--                            <form class="navbar-search pull-left">
+                                                            <input type="text" class="search-query" placeholder="Search" />
+                                                        </form>-->
+                            <ul class="nav pull-right">
+                                <li>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Profile</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" >
+                                                <h:form>
+                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
+                                                </h:form>
+                                            </a>
+                                            <!--                                            <a href="">Logout</a>-->
+                                        </li>
+                                    </ul>
+                                </li>
+                                <h:form style="position: absolute; right: -50px; top:8px;">
+                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
+                                </h:form>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="body-contnet">
+                <section id="full-width">
+                    <div class="well well-w-top">
+                        <div class="well-con height" >
+                            <div class="top-well">
+                                <h1><i class="s-icon s-icon-stat"></i>Analitic</h1>
+                            </div>
+
+                            <div style="display: block; margin-top: 50px;">
+
+                            </div>
+
+                            <table style="width: 100%;  ">
+                                <tr>
+                                    <td style="width: 50%; border-right: dashed 2px grey;">
+                                        <div style="display: inline-block; text-align: center; width: 100%; ">
+                                            <div style="margin: 0 auto; display: block; width: 400px;">
+
+                                                <div style="margin-bottom: 70px; font-size: 50px;">Tension Index</div>
+
+
+                                                <span style="font-size: 120px;" id="currentTension">60</span>
+
+
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="width: 50%;">
+                                        <div style="display: inline-block; text-align: center; width: 100%;   ">
+                                            <div style="margin: 0 auto; display: block; width: 400px;">
+                                                <div style="margin-bottom: 30px; font-size: 50px;">bpm</div>
+                                                <table style="margin: 0 auto;">
+                                                    <tr>
+                                                        <td>
+                                                            <img src="#{request.contextPath}/images/beating-heart.gif" style="width: 100px; padding-bottom: 5px;" />
+                                                        </td>
+                                                        <td>
+                                                            <span style="font-size: 120px; display: inline-block; " id="myPulse">60 <span style="font-size: 20px;"></span></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+                            <div class="myprogress myprogress-striped progress-success" style="padding: 10px; margin: 10px; height: 70px;" id="myProgress">
+                                <div class="bar" style="width: 40%; height: 70px;background-size: 70px 70px;"></div>
+                            </div>
+
+                            <div class="well-content">
+
+                                <!--                                <h1 id="IN_h1">IN</h1>-->
+                                <div id="placeholder_IN" style="width: 100%;
+                                     height: 300px; background-color: #333; margin: 0 auto; margin-bottom: 18px;">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </section>
+
+
+        </div>
+        <section id="footer">
+            <div class="footer">
+                <div class="container">
+                    <div class="copyright">
+                        Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <h:panelGroup id="callbackSpan" style="display: none;" >
+            <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
+            <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
+
+        </h:panelGroup>
+
+
+
+    </h:body>
+</html>

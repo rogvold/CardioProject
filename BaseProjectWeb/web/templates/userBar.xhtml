@@ -22,19 +22,19 @@
                         <li class="divider-vertical"></li>
                         <li>
                             <a href="#{request.contextPath}/faces/sessions.xhtml">
-                                Сессии
+                                Sessions
                             </a>
                         </li>
                         <li class="divider-vertical"></li>
                         <li>
                             <a href="#{request.contextPath}/faces/card.xhtml">
-                                Мой профиль
+                                My profile
                             </a>
                         </li>
                         <li class="divider-vertical"></li>
                         <li>
                             <a href="#{request.contextPath}/faces/myTrainers.xhtml">
-                                Мои докторы
+                                My doctors
                                 <c:if test="#{friendsBean.hasNewFriends()}">
                                     <span class="badge badge-warning">#{friendsBean.newFriendsAmount}</span>
                                 </c:if>
@@ -64,14 +64,14 @@
                                 <li class="divider"></li>
                                 <li><a href="#" >
                                         <h:form>
-                                            <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                            <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
                                         </h:form>
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <h:form style="position: absolute; right: -50px; top:8px;">
-                            <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                            <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
                         </h:form>
                     </ul>
                 </div>

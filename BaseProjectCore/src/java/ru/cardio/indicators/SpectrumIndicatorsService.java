@@ -67,6 +67,6 @@ public class SpectrumIndicatorsService extends AbstractIndicatorsService {
     }
 
     public double getIC() {
-        return (getHFPercents() + getLFPercents()) / getVLFPercents();
+        return Math.floor((getHFPercents() + getLFPercents()) * 100.0 / getVLFPercents()) / 100.0;
     }
 }

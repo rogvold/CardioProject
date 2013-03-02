@@ -49,6 +49,14 @@
         <servlet-name>sync</servlet-name>
         <servlet-class>ru.cardio.servlets.SyncServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>IndicatorPlotServlet</servlet-name>
+        <servlet-class>ru.cardio.servlets.IndicatorPlotServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PulseServlet</servlet-name>
+        <servlet-class>ru.cardio.servlets.PulseServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>/faces/*</url-pattern>
@@ -80,6 +88,14 @@
     <servlet-mapping>
         <servlet-name>sync</servlet-name>
         <url-pattern>/sync</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>IndicatorPlotServlet</servlet-name>
+        <url-pattern>/indicatorplot</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PulseServlet</servlet-name>
+        <url-pattern>/pulse</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

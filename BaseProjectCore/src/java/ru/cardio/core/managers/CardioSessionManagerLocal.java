@@ -56,4 +56,6 @@ public interface CardioSessionManagerLocal {
     public boolean deleteSession(Long sessionId);
 
     public boolean userHasActiveSession(Long userId);
+    
+    public Double getCurrentPulse(Long sessionId);
 }

@@ -441,7 +441,7 @@
                                 <li class="divider-vertical"></li>
                                 <li>
                                     <a href="#{request.contextPath}/faces/sessions.xhtml">
-                                        Сессии
+                                        Sessions
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>
@@ -466,7 +466,7 @@
                             </ul>
 
                             <span style="margin-top:8px; display: inline-block; ">
-                                Создание метки: <input type="checkbox" id="note_checkbox" onclick="checkboxClick();" />
+                                Create tag: <input type="checkbox" id="note_checkbox" onclick="checkboxClick();" />
                             </span>
 
                             <ul class="nav pull-right">
@@ -481,7 +481,7 @@
                                         <li class="divider"></li>
                                         <li><a href="#" >
                                                 <h:form>
-                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
                                                 </h:form>
                                             </a>
                                             <!--                                            <a href="">Logout</a>-->
@@ -489,7 +489,7 @@
                                     </ul>
                                 </li>
                                 <h:form style="position: absolute; right: -50px; top:8px;">
-                                    <h:commandLink actionListener="#{loginBean.logout()}" value="Выход"/>
+                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
                                 </h:form>
                             </ul>
                         </div>
@@ -529,7 +529,7 @@
                             <div class="well well-w-top">
                                 <div class="well-con height" style="overflow-y: auto; max-height: 520px;">
                                     <div class="top-well">
-                                        <h1><i class="s-icon s-icon-posts"></i>Мои сессии</h1>
+                                        <h1><i class="s-icon s-icon-posts"></i>Мои Sessions</h1>
                                     </div>
                                     <div class="well-content">
                                         <table class="table table-striped pull-left">
@@ -588,20 +588,20 @@
                             <div class="well well-w-top">
                                 <div class="well-con height">
                                     <div class="top-well">
-                                        <h1>Показатели | <a href="javascript: void();" onclick=" nextSelection();"> next 5 min. interval</a></h1>
+                                        <h1>Indicators | <a href="javascript: void();" onclick=" nextSelection();"> next 5 min. interval</a></h1>
                                     </div>
                                     <div id="miniPlaceholder" style="display: block; width: 100%; height:200px;">
 
                                     </div>
                                     <span class="span4 well-con well">
                                         <div class="top-well">
-                                            <h1>Спектральный анализ</h1>
+                                            <h1>Spectrum analysis</h1>
                                         </div>
                                         <div id="spectrumPlaceholder" style="width: 100%; height: 150px;">
 
                                         </div>
 
-                                        <span class="stat-title">TP (Общая мощность спектра): 
+                                        <span class="stat-title">TP (Total Spectrum Power): 
                                             <span class="stat-num plus-percent" id="tp_span"></span>
 
                                         </span>
@@ -612,7 +612,7 @@
 
                                     <span class="span3 well-con well">
                                         <div class="top-well">
-                                            <h1>Вариационная пульсометрия</h1>
+                                            <h1>HRV</h1>
                                         </div>
 
                                         <span class="stat-title">ИН (Индекс напряжения): 
@@ -630,7 +630,7 @@
                                         <br/>
 
                                         <div class="top-well">
-                                            <h1>Статистический анализ</h1>
+                                            <h1>Statistics analysis</h1>
                                         </div>
 
                                         <span class="stat-title">RRNN (Среднее значение): 
@@ -657,7 +657,7 @@
 
                                     <span class="span3 well-con well">
                                         <div class="top-well">
-                                            <h1>Временной анализ</h1>
+                                            <h1>Time analysis</h1>
                                         </div>
 
                                         <span class="stat-title">PNN50: 
@@ -711,7 +711,7 @@
         </h:panelGroup>
 
         <h:panelGroup id="notePanel" style="display: none; padding: 10px; border-style: solid; border-color: grey; border-width: 1px; border-radius: 10px; width: 40%; left: 30%; position: fixed; background-color: #1C1D1F;  top: 100px;">
-            <h3>Создание метки</h3>
+            <h3>Create tag</h3>
             <br/>
 
             <h:form prependId="false" >
