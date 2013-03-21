@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 import ru.cardio.core.jpa.entity.User;
 import ru.cardio.core.managers.UserManagerLocal;
 import ru.cardio.core.utils.UserUtils;
+import ru.cardio.exceptions.CardioException;
 import web.utils.SessionListener;
 
 /**
@@ -123,11 +124,20 @@ public class LoginBean implements Serializable {
         return b;
     }
 
+    private boolean userExistsByEmail(String email){
+        boolean b = true;
+        try {
+            b = userMan.userExistsByEmail(email);
+        } catch (Exception e) {
+        }
+        return b;
+    }
+    
     private boolean checkLoginData() {
         boolean b = true;
         b = checkEmailAndPasword();
         if (b == true) {
-            if (!userMan.userExistsByEmail(email)) {
+            if (!userExistsByEmail(email)) {
                 b = false;
                 this.flag = FLAG_USER_DOES_NOT_EXIST;
                 addNotificationTextByFlag(flag);
@@ -147,7 +157,7 @@ public class LoginBean implements Serializable {
         }
 
         if (b == true) {
-            if (userMan.userExistsByEmail(email)) {
+            if (userExistsByEmail(email)) {
                 b = false;
                 this.flag = FLAG_USER_EXISTS;
                 addNotificationTextByFlag(flag);
@@ -175,7 +185,7 @@ public class LoginBean implements Serializable {
         }
     }
 
-    public void register() {
+    public void register() throws CardioException {
         this.notificationText = "";
         if (!checkRegistrationData()) {
             return;
@@ -189,7 +199,7 @@ public class LoginBean implements Serializable {
         login();
     }
 
-    public void login() {
+    public void login() throws CardioException {
         this.notificationText = "";
         if (!checkLoginData()) {
             return;

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<!-- saved from url=(0050)http://wbpreview.com/previews/WB0391302/index.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta charset="utf-8"/>
+        <title>Twitter Bootstrap</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <link href="../css/bootstrap.css" rel="stylesheet" />
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="../css/Common.css" rel="stylesheet" />
+        <f:event listener="#{webSession.loginRedirect()}" type="preRenderView" />
+        <script src="./js/jquery.min.js"></script>
+        <script src="../js/jquery.flot.js"></script>
+        <script src="./js/jquery.flot.selection.js"></script>
+        <script src="./js/jquery.flot.pie.js"></script>
+        <script src="./js/jquery.flot.threshold.js"></script>
+        <script src="./js/jquery.flot.threshold.plugin.js"></script>
+
+
+        <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="../timeline/timeline.js"></script>
+        <link rel="stylesheet" type="text/css" href="../timeline/timeline.css"/>
+
+        <!--        <script src="./js/jquery.js"></script>-->
+
+        <script type="text/javascript">
+            
+            
+            
+            var currentIN = 250;
+            var json=null;
+            
+            function getStateClass(index){
+
+                if (  ( index > 150)){
+                    return "progress-danger";
+                }
+                if ( (index >  80) &amp;&amp; ( -index > -150)){
+                    return "progress-success";
+                }
+                if ( (-index > - 80)){
+                    return "progress-info";
+                }
+            }
+            
+            function getPercents(index){
+                if (index > 500) index = 500;
+                return  (index / 5.0);
+            }
+            1
+            
+            function calculatePulse(rates){
+                if (rates == null) return null;
+                var n = rates.length - 1;
+                return (180000.0 / (0.0 + rates[n][1] + rates[n-1][1] + rates[n-2][1]));
+            }
+            
+            var options = {
+                series: { shadowSize: 0, color : 'white'},
+                yaxis: { color: '#92d5ea' },
+                xaxis: { mode: "time", color: '#92d5ea'}
+            };
+            
+            function getUrlVars()
+            {
+
+                var vars = [], hash;
+
+                var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&amp;');
+
+                for(var i = 0; -i > -hashes.length; i++)
+
+                {
+
+                    hash = hashes[i].split('=');
+
+                    vars.push(hash[0]);
+
+                    vars[hash[0]] = hash[1];
+
+                }
+
+                return vars;
+            }
+
+            $(function(){
+                //                update();
+                //                plotINData();
+                //                setInterval(function(){
+                //                    update();
+                //                },3000);
+                //                
+                //                plotINData();
+            })
+
+            function update(){
+                $.ajax({
+                    type: "POST",
+                    url: "indicatorplot",
+                    data: { param: "IN"
+                        ,
+                        sessionId: $('#selected_session_id').html()
+                    }
+                }).done(function( msg ) {
+                    json = JSON.parse(msg);
+                    plotINData();
+                    
+                });
+                
+                $.ajax({
+                    type: "POST",
+                    url: "pulse",
+                    data: {sessionId: getUrlVars()["id"]}
+                }).done(function( msg ) {
+                    $('#myPulse').html(msg);
+                    
+                });
+            }
+
+
+            function plotINData(){
+       
+                //              
+                if (json == null) {
+                    //                    alert('не достаточно данных');
+                    return;
+                    
+                };
+                data = eval(json.data);
+                currentIN = data[data.length - 1][1];
+                
+                $('#myProgress').attr('class', 'progress progress-striped  ' + getStateClass(currentIN));
+                $('#myProgress .bar').css('width',getPercents(currentIN) + '%');
+                $('#currentTension').html(Math.floor(currentIN));
+                $('#currentTension').attr('class',getStateClass(currentIN));
+                
+                var opt = [ {
+                        data: data,
+                        
+                        constraints: [      
+
+                            {
+                                threshold: {below:150},
+                                color: "#99FF33"
+                            },
+                            {
+                                threshold: {below:80},
+                                color: "#CCFF99"
+                            }
+                            ,
+                            {
+                                threshold: {above:150},
+                                color: "#FF6633"
+                            }        
+                        ]
+                    } ] ;
+                
+                $.plot("#placeholder_IN", opt , options);
+            }
+
+            
+        </script>
+
+
+        <script type="text/javascript">
+            var timeline;
+            
+            function getSelectedRow() {
+                var row = undefined;
+                var sel = timeline.getSelection();
+                if (sel.length) {
+                    if (sel[0].row != undefined) {
+                        row = sel[0].row;
+                    }
+                }
+                return row;
+            }
+            
+            google.load("visualization", "1");
+
+            google.setOnLoadCallback(drawVisualization);
+
+            function drawVisualization() {
+
+                // Create and populate a data table.
+                var data = new google.visualization.DataTable();
+
+                data.addColumn('datetime', 'start');
+                data.addColumn('datetime', 'end');
+                data.addColumn('string', 'content');
+
+                
+                var onadd = function () {
+                    alert('new item added');
+                };
+                
+                var onselect = function (event) {
+                    var row = getSelectedRow();
+
+                    if (row != undefined) {
+                        //                        alert(myArray[row].id);
+                        $('#selected_session_id').html(myArray[row].id);
+                        $('#placeholder_IN').css('display','block');
+                        $('#in_header').html('Current session: ');
+                        update();
+                        // Note: you can retrieve the contents of the selected row with
+                        //       data.getValue(row, 2);
+                    }
+                    else {
+                        //                        alert('undefined');
+                    }
+                };
+                
+                $('#data').html('#{cardioSessionBean.allSessionsTimelineJson}');
+                var list = eval($('#data').html());
+                //                alert(list);
+                timeline = new links.Timeline(document.getElementById('mytimeline'));
+                
+                var myArray = new Array();
+                
+                for (var i=0; i &lt; list.length ; i++){
+                    var s = list[i];
+                    startDate = new Date(s.start);
+                    endDate = new Date(s.end);
+                    myArray.push({
+                        'start': startDate,
+                        'end': endDate,
+                        'content':  s.content ,
+                        'id': s.id
+                    });
+                }
+                
+                var options = {
+                    'width':  '100%',
+                    'height': '200px',
+                    'style': 'box',
+                    "intervalMin": 300 * 60 * 60 * 24,          // one day in milliseconds
+                    "intervalMax": 1000 * 60 * 60 * 24 * 31 * 3,  // about three months in milliseconds
+                    "max": new Date( myArray[0].end.valueOf() + 1000*60*60*12 ) ,
+                    "min": new Date(myArray[myArray.length - 1].start.valueOf() - 1000*60*60*12)
+                };
+                
+                google.visualization.events.addListener(timeline, 'add', onadd);
+                google.visualization.events.addListener(timeline, 'select', onselect);
+
+                // Draw our timeline with the created data and options
+                timeline.draw(myArray, options);
+            }
+            
+            
+            function add(start, end, content){
+                alert(timeline);
+                timeline.addItem({
+                    'start': start,
+                    'end': end,
+                    'content': content
+                });
+            }
+            
+        </script>
+
+    </h:head>
+    <h:body>
+        <div class="container">
+
+            <section id="top-bar">
+                <div class="navbar navbar-fixed-top">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul class="nav">
+                                <li>
+                                    <a href="#{request.contextPath}/faces/index.xhtml">
+                                        Dashboard 
+                                        <c:if test="#{cardioSessionBean.hasActiveSession(webSession.userId)}" >
+                                            <span class="badge badge-success">!</span>
+                                        </c:if>
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="#{request.contextPath}/faces/sessions.xhtml">
+                                        Sessions
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="#{request.contextPath}/faces/card.xhtml">
+                                        Personal card
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="javascript:void()">
+                                        FAQ
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                                <li>
+                                    <a href="javascript:void()">
+                                        Components
+                                    </a>
+                                </li>
+                                <li class="divider-vertical"></li>
+                            </ul>
+                            <!--                            <form class="navbar-search pull-left">
+                                                            <input type="text" class="search-query" placeholder="Search" />
+                                                        </form>-->
+                            <ul class="nav pull-right">
+                                <li>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">user#{webSession.userId}</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#">Profile</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" >
+                                                <h:form>
+                                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
+                                                </h:form>
+                                            </a>
+                                            <!--                                            <a href="">Logout</a>-->
+                                        </li>
+                                    </ul>
+                                </li>
+                                <h:form style="position: absolute; right: -50px; top:8px;">
+                                    <h:commandLink actionListener="#{loginBean.logout()}" value="log out"/>
+                                </h:form>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="body-contnet">
+                <section id="full-width">
+                    <div class="well well-w-top">
+                        <div class="well-con height" >
+                            <div class="top-well">
+                                <h1><i class="s-icon s-icon-stat"></i>Analitic</h1>
+                            </div>
+
+                            <div style="display: block; margin-top: 50px;">
+
+                            </div>
+
+                            <div id="mytimeline" style="padding: 5px; margin: 10px; background-color: whitesmoke;">
+
+                            </div>
+                            <h1 id="in_header" style="margin-left: 5px; display: inline-block;">
+                                Choose session please
+                            </h1> 
+                            <h1 style="display: inline-block;"><span id="selected_session_id"></span></h1>
+
+                            <div style="display: none;" id="data"></div>
+
+
+                            <div class="well-content">
+
+                                <!--                                <h1 id="IN_h1">IN</h1>-->
+                                <div id="placeholder_IN" style="width: 100%;
+                                     height: 300px; background-color: #333; display: none; margin: 0 auto; margin-bottom: 18px;">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+            </section>
+
+
+        </div>
+        <section id="footer">
+            <div class="footer">
+                <div class="container">
+                    <div class="copyright">
+                        Copyright © 2012 <a href="http://wbpreview.com/previews/WB0391302/index.html#">Bootstrap in Dark</a>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <h:panelGroup id="callbackSpan" style="display: none;" >
+            <span id="selectedSessionId">#{cardioSessionBean.selectedCardioSessionId}</span>
+            <span id="selectedSessionStatus">#{cardioSessionBean.statusBySessionId(cardioSessionBean.selectedCardioSessionId)}</span>
+        </h:panelGroup>
+
+
+
+    </h:body>
+</html>

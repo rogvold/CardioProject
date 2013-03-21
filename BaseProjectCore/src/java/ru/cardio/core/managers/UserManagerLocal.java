@@ -4,6 +4,8 @@ import java.util.List;
 import javax.ejb.Local;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.jpa.entity.User;
+import ru.cardio.exceptions.CardioException;
+import ru.cardio.json.entity.SimpleUser;
 
 /**
  *
@@ -14,23 +16,28 @@ public interface UserManagerLocal {
     
     
     public User getUserById(Long userId);
-    public User getUserByEmail(String email);
+    public User getUserByEmail(String email) throws CardioException;
     
-    public User registerNewUser(String email,  String password, String firstName, String  lastName, int group);
+    public User registerNewUser(String email,  String password, String firstName, String  lastName, int group) throws CardioException;
     
-    public User logInByEmail(String email, String password);
+    public User logInByEmail(String email, String password) throws CardioException;
     
-    public boolean userExistsByEmail(String email);
+    public boolean userExistsByEmail(String email) throws CardioException;
     public boolean userExistsById(Long userId);
     
     public boolean checkAuData(Long userId, String password);
-    public boolean checkAuthorisationData(String email, String password);
+    public boolean checkAuthorisationData(String email, String password)  throws CardioException;
 
-    public boolean checkEmailAndLogin(String email, String password) throws Exception;
+    public boolean checkEmailAndPassword(String email, String password) throws CardioException;
     
     public int getUserGroupById(Long userId);
     
     public void updateInfo(Long userId, String fName, String lName, String dep, String newStatusMessage);
+    
+    
+    public void updateInfo(SimpleUser su) throws CardioException;
+    
+    public SimpleUser getSimpleInfo(String email, String password) throws CardioException;
     
     public boolean userSensorIsWorking(Long userId);
     

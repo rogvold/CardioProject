@@ -99,7 +99,7 @@ public class MobileAuthentificationServlet extends HttpServlet {
                 if (purpose.equals(CHECK_USER_AUTHORISATION_DATA_PURPOSE_VALUE)) {
                     String email = JsonUtils.getStringFromJson(jsonString, EMAIL_PARAM_NAME);
                     String password = JsonUtils.getStringFromJson(jsonString, PASSWORD_PARAM_NAME);
-                    resp = userMan.checkEmailAndLogin(email, password) ? YES : NO;
+                    resp = userMan.checkEmailAndPassword(email, password) ? YES : NO;
                 }
                 if ("".equals(resp)) {
                     throw new Exception("purpose value is not proper");

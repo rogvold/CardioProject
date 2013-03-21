@@ -2,7 +2,6 @@ package ru.cardio.core.jpa.entity;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
 
 /**
@@ -58,6 +57,24 @@ public class User implements Serializable {
     @Column
     private String department;
 
+    public User() {
+        super();
+    }
+
+    
+    
+    public User(String email, String password, String firstName, String lastName, String department, String statusMessage) {
+        this.email = email;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.department = department;
+        this.statusMessage = statusMessage;
+    }
+
+    
+    
+    
     public Long getId() {
         return id;
     }
@@ -136,6 +153,7 @@ public class User implements Serializable {
 
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+        this.statusMessageChangingDate = new Date();
     }
 
     public Date getStatusMessageChangingDate() {

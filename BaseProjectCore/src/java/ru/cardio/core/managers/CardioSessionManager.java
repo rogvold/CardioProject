@@ -13,7 +13,9 @@ import ru.cardio.core.entity.Rate;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.jpa.entity.User;
 import ru.cardio.core.utils.CardioUtils;
+import ru.cardio.exceptions.CardioException;
 import ru.cardio.filters.BaevskyFilter;
+import ru.cardio.json.entity.SimpleRatesData;
 
 /**
  *
@@ -21,19 +23,17 @@ import ru.cardio.filters.BaevskyFilter;
  */
 @Stateless
 public class CardioSessionManager implements CardioSessionManagerLocal {
-
+    
     public static final String DELIMETER = ";";
     public static final int SESSION_TIMEOUT = 120000;
     public static final boolean SESSION_TIMEOUT_MODE = true;
     public static final boolean SESSION_CREATION_FLAG_MODE = false;
-    
     public static final boolean BAEVSKY_FILTER_ENABLED = true;
-    
     @PersistenceContext(unitName = "BaseProjectCorePU")
     EntityManager em;
     @EJB
     UserManagerLocal userMan;
-
+    
     @Override
     public List<Rate> getRatesInCardioSession(Long sessionId, int amount) {
         CardioSession cs = getCardioSessionById(sessionId);
@@ -41,15 +41,15 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return null;
         }
         List<Integer> list = CardioUtils.getIntervalsFromString(cs.getRates(), DELIMETER);
-        if (BAEVSKY_FILTER_ENABLED){
+        if (BAEVSKY_FILTER_ENABLED) {
             list = BaevskyFilter.getInstance().filterRates(list);
         }
         
         List<Rate> rates = new ArrayList();
-
+        
         Date d = new Date();
         d.setTime(cs.getStartDate().getTime());
-
+        
         for (Integer i : list) {
             Rate currRate = new Rate(d, i);
             currRate.setSessionId(sessionId);
@@ -58,7 +58,6 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             d.setTime(currRate.getDuration() + currRate.getStartDate().getTime());
         }
 
-//        System.out.println("getRatesInCardioSession: rates = " + rates);
 
         if (amount == -1) {
             return rates;
@@ -70,16 +69,16 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
     }
     
-    private Double getPulse(Long sessionId){
+    private Double getPulse(Long sessionId) {
         List<Rate> rates = getRatesInCardioSession(sessionId, -1);
         Double p = 0.0;
-        for (int i = rates.size() - 3; i < rates.size(); i++){
-            p+=rates.get(i).getDuration();
+        for (int i = rates.size() - 3; i < rates.size(); i++) {
+            p += rates.get(i).getDuration();
         }
         p = (180000.0 / p);
         return Math.floor(p);
     }
-
+    
     @Override
     public CardioSession getCardioSessionById(Long sessionId) {
 //        System.out.println("getCardioSessionById: sessionID = " + sessionId);
@@ -88,9 +87,9 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         } catch (Exception e) {
             return null;
         }
-
+        
     }
-
+    
     @Override
     public List<Rate> getMyRatesInCardioSession(Long sessionId, int amount, Long requestOwnerId) {
         CardioSession cs = getCardioSessionById(sessionId);
@@ -105,7 +104,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return null;
         }
     }
-
+    
     private String getPlotData(List<Rate> rates) {
         String s = "[";
         for (int i = 0; i < rates.size() - 1; i++) {
@@ -117,7 +116,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         s = s + "]";
         return s;
     }
-
+    
     private String getKubiosDataOfCardioSession(List<Rate> list) {
         String s = "";
         for (Rate r : list) {
@@ -125,7 +124,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         return s;
     }
-
+    
     private List<String> getKubiosDataOfCardioSessionStringList(List<Rate> list) {
         List<String> l = new ArrayList();
         for (Rate r : list) {
@@ -133,19 +132,19 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         return l;
     }
-
+    
     @Override
     public List<String> getKubiosDataOfRatesInCardioSessionBySessionId(Long sessionId, int amount, Long requestOwnerId) {
         List<Rate> list = getMyRatesInCardioSession(sessionId, amount, requestOwnerId);
         return (list == null) ? null : getKubiosDataOfCardioSessionStringList(list);
     }
-
+    
     @Override
     public String getPlotDataOfRatesInMyCardioSession(Long sessionId, int amount, Long requestOwnerId) {
         List<Rate> list = getMyRatesInCardioSession(sessionId, amount, requestOwnerId);
         return (list == null) ? null : getPlotData(list);
     }
-
+    
     @Override
     public List<Long> getUserCardioSessionsId(Long userId) {
         Query q = em.createQuery("select c from CardioSession c where c.userId=:id order by c.startDate desc").setParameter("id", userId);
@@ -156,25 +155,22 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         return list;
     }
-
-    private boolean sessionWithThisStartDateExists(Date start) {
+    
+    private void checkIfsessionWithThisStartDateExists(Date start) throws CardioException {
         String jpql = "select c from CardioSession c where c.startDate = :start";
         Query q = em.createQuery(jpql).setParameter("start", start);
         List<CardioSession> list = q.getResultList();
         if (list == null) {
-            return false;
-        }
-        if (list.size() > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate) {
-        if (sessionWithThisStartDateExists(startDate)) {
             return;
         }
+        if (list.size() > 0) {
+            throw new CardioException("session with startDate = " + start + " already exists in the system");
+        }
+    }
+    
+    @Override
+    public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate) throws CardioException {
+        checkIfsessionWithThisStartDateExists(startDate);
         CardioSession cs = new CardioSession();
         cs.setStartDate(startDate);
         String s = "";
@@ -187,7 +183,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             s += ratesIdList.get(ratesIdList.size() - 1);
             time += ratesIdList.get(ratesIdList.size() - 1);
         }
-
+        
         Date end = new Date();
         end.setTime(time);
         cs.setEndDate(end);
@@ -196,7 +192,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         cs.setStatus(CardioSession.STATUS_CURRENT);
         em.persist(cs);
     }
-
+    
     @Override
     public CardioSession getCurrentCardioSession(Long userId) {
         if (userId == null) {
@@ -210,7 +206,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return null;
         }
     }
-
+    
     @Override
     public Long getCurrentCardioSessionId(Long userId) {
         try {
@@ -218,9 +214,9 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         } catch (Exception e) {
             return null;
         }
-
+        
     }
-
+    
     @Override
     public void disableCurrentCardioSession(Long userId) {
         CardioSession cs = getCurrentCardioSession(userId);
@@ -230,35 +226,35 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         cs.setStatus(CardioSession.STATUS_OLD);
         em.merge(cs);
     }
-
+    
     @Override
-    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession) {
+    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession) throws CardioException {
         if ((ratesList == null) || (ratesList.isEmpty())) {
             return;
         }
-
+        
         CardioSession currentCs = getCurrentCardioSession(userId);
         User user = userMan.getUserById(userId);
         user.setLastDataRecievedDate(new Date());
         em.merge(user);
-
+        
         if (currentCs == null) {
             addRatesCreatingNewSession(userId, ratesList, startDate);
             return;
         }
-
+        
         if (currentCs.getEndDate().getTime() > startDate.getTime()) {
             System.out.println("Current endDate > startDate. Please check your clock.");
             return;
         }
-
+        
         boolean shouldCreateNewSession = createSession;
-
+        
         if (SESSION_TIMEOUT_MODE && startDate.getTime() - currentCs.getEndDate().getTime() > SESSION_TIMEOUT) {
             shouldCreateNewSession = true;
         }
-
-
+        
+        
         if (createSession) {
             currentCs.setStatus(CardioSession.STATUS_OLD);
             em.merge(currentCs);
@@ -271,10 +267,10 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
                 time += ratesList.get(i);
                 s += ratesList.get(i) + ";";
             }
-
+            
             time += ratesList.get(ratesList.size() - 1);
             s += ratesList.get(ratesList.size() - 1);
-
+            
             Date newEnd = new Date();
             newEnd.setTime(time);
             currentCs.setEndDate(newEnd);
@@ -282,16 +278,16 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             em.merge(currentCs);
         }
     }
-
+    
     @Override
-    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password) {
+    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password) throws CardioException {
         if (userMan.checkAuData(userId, password) == false) {
             System.out.println("Authorisation failed");
             return;
         }
         addRates(userId, ratesList, startDate, createSession);
     }
-
+    
     @Override
     public String getPlotDataOfCurrentSession(int amount, Long requestOwnerId) {
         CardioSession cs = getCurrentCardioSession(requestOwnerId);
@@ -300,7 +296,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         return getPlotDataOfRatesInMyCardioSession(cs.getId(), amount, requestOwnerId);
     }
-
+    
     @Override
     public int getSessionRatesAmountById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
@@ -309,31 +305,31 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
         }
         return cs.getRates().split(CardioSessionManager.DELIMETER).length;
     }
-
+    
     @Override
     public Long getSessionDurationById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
         return (cs == null) ? null : cs.getEndDate().getTime() - cs.getStartDate().getTime();
     }
-
+    
     @Override
     public Date getSessionStartDateById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
         return (cs == null) ? null : cs.getStartDate();
     }
-
+    
     @Override
     public int getSessionStatusById(Long sessionId) {
         CardioSession cs = getCardioSessionById(sessionId);
         return (cs == null) ? -1 : cs.getStatus();
     }
-
+    
     @Override
-    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password) {
+    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password) throws CardioException {
         User u = userMan.getUserByEmail(email);
         addRates(u.getId(), ratesList, startDate, createSession, password);
     }
-
+    
     @Override
     public void updateSessionDescription(Long sessionId, String newDescription) {
         try {
@@ -344,7 +340,7 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             System.out.println("exception occured: exc = " + e.toString());
         }
     }
-
+    
     @Override
     public List<CardioSession> getUserCardioSessions(Long userId) {
         try {
@@ -354,9 +350,9 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             System.out.println("getUserCardioSessions(usrId  = " + userId + ") : exc = " + e.toString());
             return null;
         }
-
+        
     }
-
+    
     @Override
     public boolean deleteSession(Long sessionId) {
         try {
@@ -368,15 +364,76 @@ public class CardioSessionManager implements CardioSessionManagerLocal {
             return false;
         }
     }
-
+    
     @Override
     public boolean userHasActiveSession(Long userId) {
         Long l = getCurrentCardioSessionId(userId);
         return l == null ? false : true;
     }
-
+    
     @Override
     public Double getCurrentPulse(Long sessionId) {
         return getPulse(sessionId);
     }
+    
+    @Override
+    public void addRates(SimpleRatesData srd) throws CardioException {
+        System.out.println("addRates: srd: \n" + srd.toString());
+        try {
+            addRates(srd.getEmail(), srd.getRates(), srd.getStart(), (srd.getCreate() == 1) ? true : false, srd.getPassword());
+        } catch (Exception e) {
+            throw new CardioException(e.getMessage());
+        }
+    }
+    
+    private Date calculateEndDate(Date startDate, List<Integer> ratesList){
+        long l = startDate.getTime();
+        for (Integer i : ratesList){
+            l+=i;
+        }
+        return new Date(l);
+    }    
+    
+    private void checkNewIncomingSession(Long userId, List<Integer> ratesList, Date startDate)throws CardioException{
+        Date endDate = calculateEndDate(startDate, ratesList);
+        Query q  = em.createQuery("select cs FROM CardioSession cs  WHERE cs.startDate = :start").setParameter("start", startDate);
+        List<CardioSession> slist = q.getResultList();
+        if (q!=null){
+            throw new CardioException("The session with startDate = " + startDate+" has been already saved");
+        }
+    }
+    
+    @Override
+    //dummy implementation
+    public void syncRates(Long userId, List<Integer> ratesList, Date startDate) throws CardioException {
+        if ((ratesList == null) || (ratesList.isEmpty())) {
+            return;
+        }
+        checkNewIncomingSession(userId, ratesList, startDate);
+        addRatesCreatingNewSession(userId, ratesList, startDate);
+    }
+    
+    @Override
+    public void syncRates(Long userId, List<Integer> ratesList, Date startDate, String password) throws CardioException {
+        if (userMan.checkAuData(userId, password) == false) {
+            throw new CardioException("syncRates: authorisation failed");
+        }
+        syncRates(userId, ratesList, startDate);
+    }
+    
+    
+    
+    @Override
+    public void syncRates(String email, List<Integer> ratesList, Date startDate, String password) throws CardioException {
+        if (!userMan.checkEmailAndPassword(email, password)){
+            throw new CardioException("syncRates: authorisation failed");
+        }
+        syncRates(userMan.getUserByEmail(email).getId(), ratesList, startDate);
+    }
+
+    @Override
+    public void syncRates(SimpleRatesData srd) throws CardioException {
+        syncRates(srd.getEmail(), srd.getRates(), srd.getStart(), srd.getPassword());
+    }
+    
 }

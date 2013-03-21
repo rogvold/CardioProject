@@ -79,14 +79,11 @@
 
             $(function(){
                 if (#{chartsBean.plotHRVJsonString("IN") == ""}){
-                    alert("not anough data");
-                    //                    window.location.href = '#{request.contextPath}/faces/index.xhtml';
-                    return;
                 }
                 plotINData();
                 setInterval(function(){
                     update();
-                },5000);
+                },3000);
                 //                plotINData();
             })
 
@@ -182,7 +179,7 @@
                                 <li class="divider-vertical"></li>
                                 <li>
                                     <a href="#{request.contextPath}/faces/card.xhtml">
-                                        Карточка
+                                        Personal card
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>

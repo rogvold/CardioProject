@@ -9,6 +9,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.managers.CardioSessionManagerLocal;
+import ru.cardio.web.js.utils.CardioSessionHelper;
 import web.utils.SessionUtils;
 
 /**
@@ -26,6 +27,8 @@ public class CardioSessionBean implements Serializable {
     private List<CardioSession> userCardioSessions;
     private Long deletionSessionId;
 
+    private CardioSessionHelper cardioHelper = new CardioSessionHelper();
+    
     @PostConstruct
     private void init() {
         this.userCardioSessionsIds = sm.getUserCardioSessionsId(SessionUtils.getUserId());
@@ -100,6 +103,14 @@ public class CardioSessionBean implements Serializable {
         } catch (Exception e) {
             return 0;
         }
+    }
+    
+    public String timelineJsonBySessionId(Long sessionId){
+       return cardioHelper.getTimelineJson(sm.getCardioSessionById(sessionId));
+    }
+    
+    public String getAllSessionsTimelineJson(){
+        return cardioHelper.getTimelineJsonFromSessionList(userCardioSessions);
     }
 
     public void selectSessionForDeleting(Long sessionId) {

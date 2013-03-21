@@ -5,6 +5,8 @@ import java.util.List;
 import javax.ejb.Local;
 import ru.cardio.core.entity.Rate;
 import ru.cardio.core.jpa.entity.CardioSession;
+import ru.cardio.exceptions.CardioException;
+import ru.cardio.json.entity.SimpleRatesData;
 
 /**
  *
@@ -29,7 +31,7 @@ public interface CardioSessionManagerLocal {
 
     public List<CardioSession> getUserCardioSessions(Long userId);
 
-    public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate);
+    public void addRatesCreatingNewSession(Long userId, List<Integer> ratesIdList, Date startDate) throws CardioException;
 
     public CardioSession getCurrentCardioSession(Long userId);
 
@@ -37,11 +39,13 @@ public interface CardioSessionManagerLocal {
 
     public void disableCurrentCardioSession(Long userId);
 
-    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession);
+    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession) throws CardioException;
 
-    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password);
+    public void addRates(Long userId, List<Integer> ratesList, Date startDate, boolean createSession, String password) throws CardioException;
 
-    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password);
+    public void addRates(String email, List<Integer> ratesList, Date startDate, boolean createSession, String password) throws CardioException;
+    
+    public void addRates(SimpleRatesData srd) throws CardioException;
 
     public int getSessionRatesAmountById(Long sessionId);
 
@@ -58,4 +62,12 @@ public interface CardioSessionManagerLocal {
     public boolean userHasActiveSession(Long userId);
     
     public Double getCurrentPulse(Long sessionId);
+    
+    public void syncRates(Long userId, List<Integer> ratesList, Date startDate) throws CardioException;
+    
+    public void syncRates(Long userId, List<Integer> ratesList, Date startDate, String password) throws CardioException;
+    
+    public void syncRates(String email, List<Integer> ratesList, Date startDate, String password) throws CardioException;
+    
+    public void syncRates(SimpleRatesData srd) throws CardioException;
 }

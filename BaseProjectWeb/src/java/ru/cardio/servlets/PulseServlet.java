@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package ru.cardio.servlets;
 
 import java.io.IOException;
@@ -12,8 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import ru.cardio.core.managers.CardioSessionManagerLocal;
-import ru.cardio.core.managers.IndicatorsManagerLocal;
-import ru.cardio.core.managers.SessionManagerLocal;
 
 /**
  *

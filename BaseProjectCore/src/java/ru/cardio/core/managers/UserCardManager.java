@@ -18,8 +18,9 @@ public class UserCardManager implements UserCardManagerLocal {
     EntityManager em;
 
     @Override
-    public UserCard getCardByUserId(Long userId) throws Exception {
+    public UserCard getCardByUserId(Long userId){
         try {
+            System.out.println("getCardByUserId: userId = " + userId);
             Query q = em.createQuery("select c from UserCard c where c.userId = :userId").setParameter("userId", userId);
             return (UserCard) q.getSingleResult();
         } catch (NoResultException e) {
@@ -37,7 +38,7 @@ public class UserCardManager implements UserCardManagerLocal {
         try {
             UserCard c = getCardByUserId(userId);
             c.setDescription(card.getDescription());
-            c.setDiadnoses(card.getDiadnoses());
+            c.setDiagnosis(card.getDiagnosis());
             c.setFirstName(card.getFirstName());
             c.setLastName(card.getLastName());
             c.setAboutMe(card.getAboutMe());

@@ -11,7 +11,7 @@ import ru.cardio.core.jpa.entity.UserCard;
 @Local
 public interface UserCardManagerLocal {
     
-        public UserCard getCardByUserId(Long userId) throws Exception;
+        public UserCard getCardByUserId(Long userId);
         
         public UserCard updateUserCard(UserCard card , Long userId);
 }

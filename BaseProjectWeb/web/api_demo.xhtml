@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:ppctu="http://primefaces.prime.com.tr/ui">
+    <h:head>
+        <script src="./js/jquery.min.js"></script>
+        <script src="./js/xdate.js"></script>
+        <title>Test page</title>
+
+        <script type="text/javascript">
+            var r;
+            var secret = 'h7a7RaRtvAVwnMGq5BV6';
+            var user = {
+                email: "sabirjun@gmail.com"
+                ,password: "sabirmipt"
+                ,firstName: "Sabir"
+                ,lastName: "Shaykhlislamov"
+                ,department: "MIPT"
+                ,about: "Web programmer"
+                ,diagnosis: 'Do not know'
+                ,description: 'I like this service'
+                ,statusMessage: 'I hate this cold spring in Moscow'
+            }
+            
+            var userUpdate = {
+                email: "sabirjun@gmail.com"
+                ,password: "sabirmipt"
+                ,firstName: "Sabir"
+                ,lastName: "Shaykhlislamov"
+                ,department: "MIPT"
+                ,about: "We programmer"
+                ,diagnosis: 'Do no know'
+                ,description: 'This is description change'
+                ,statusMessage: 'I adore summer'
+            }
+            
+                        
+            function myAj(s){
+                $('#urlBox').text(s);
+                $.ajax({
+                    url: s
+                    ,type: 'POST'
+                    ,success: function(res){
+                        r = res;
+                        message = (res.response == undefined) ? res.error : res.response;
+                        $('#responseBox').text(JSON.stringify(r));
+                    }
+                    ,fail: function(res){
+                        alert('fail: ' + res)
+                    }
+                });
+            }
+            
+            function checkExistence(){
+                var e = 'pogr.yuo@gmail.com';
+                var s = 'resources/auth/check_existence?secret='+secret+'&amp;email='+e;
+                myAj(s);
+            }
+            
+            function register(){
+                var s = 'resources/auth/register?secret='+secret+'&amp;email='+user.email+'&amp;password='+user.password;
+                myAj(s);
+            }
+            
+            function check(){
+                var s = 'resources/auth/check_data?secret='+secret+'&amp;email='+user.email+'&amp;password='+user.password;
+                myAj(s);
+            }
+            
+            function info(){
+                var s = 'resources/auth/info?secret='+secret+'&amp;email='+user.email+'&amp;password='+user.password;
+                myAj(s);
+            }
+            
+            function updateInfo(){
+                var s = 'resources/auth/update_info?secret='+secret+'&amp;json='+JSON.stringify(userUpdate);
+                myAj(s);
+            }
+
+
+            function uploadRates(){
+                now = new Date();
+                var ratesData = {
+                    email: 'pogr.yuo@gmail.com'
+                    ,password: '02034242'
+                    ,start: now.getTime()
+                    ,rates: [934, 912, 953]
+                    ,create: 1
+                }
+                var s = 'resources/rates/upload?json='+JSON.stringify(ratesData);
+                myAj(s);
+            }
+            
+
+            
+            function syncRates(){
+                now = new Date(2013, 0, 25,1,1,1,123); // the 25th of February
+                var ratesData = {
+                    email: 'pogr.yuo@gmail.com'
+                    ,password: '02034242'
+                    ,start: now.getTime()
+                    ,rates: [934, 912, 953]
+                }
+                var s = 'resources/rates/sync?json='+JSON.stringify(ratesData);
+                myAj(s);
+            }
+
+        </script>
+
+
+    </h:head>
+    <body>
+        <button onclick="checkExistence();">check existence</button>
+        <button onclick="register();">register</button>
+        <button onclick="info();">info</button>
+        <button onclick="updateInfo();">update info</button>
+        <button onclick="check();">check</button>
+        <button onclick="uploadRates();" >upload rates</button>
+        <button onclick="syncRates();" >sync rates</button>
+
+        <h2>url:</h2>
+        <div id="urlBox">
+
+        </div>
+        
+        <h2>response:</h2>
+        <div id="responseBox">
+
+        </div>
+
+    </body>
+</html>

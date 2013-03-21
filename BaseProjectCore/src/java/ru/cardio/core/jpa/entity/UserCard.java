@@ -19,12 +19,29 @@ public class UserCard implements Serializable {
     @Column(length = 3000)
     private String description;
     @Column(length = 3000)
-    private String diadnoses;
+    private String diagnosis;
     private Long userId;
     
     @Column(length=3000)
     private String aboutMe;
 
+    public UserCard() {
+        super();
+    }
+
+    
+    
+    public UserCard(String firstName, String lastName, String description, String diagnosis, String aboutMe) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.description = description;
+        this.diagnosis = diagnosis;
+        this.aboutMe = aboutMe;
+    }
+
+    
+    
+    
     public Long getId() {
         return id;
     }
@@ -49,12 +66,12 @@ public class UserCard implements Serializable {
         this.description = description;
     }
 
-    public String getDiadnoses() {
-        return diadnoses;
+    public String getDiagnosis() {
+        return diagnosis;
     }
 
-    public void setDiadnoses(String diadnoses) {
-        this.diadnoses = diadnoses;
+    public void setDiagnosis(String diadnoses) {
+        this.diagnosis = diadnoses;
     }
 
     public String getFirstName() {

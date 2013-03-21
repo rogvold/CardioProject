@@ -3,6 +3,9 @@ package ru.cardio.core.managers;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,7 +13,11 @@ import javax.persistence.Query;
 import ru.cardio.core.jpa.entity.CardioSession;
 import ru.cardio.core.jpa.entity.FriendRequest;
 import ru.cardio.core.jpa.entity.User;
+import ru.cardio.core.jpa.entity.UserCard;
 import ru.cardio.core.utils.UserUtils;
+import ru.cardio.exceptions.CardioException;
+import ru.cardio.helpers.UserHelper;
+import ru.cardio.json.entity.SimpleUser;
 
 /**
  *
@@ -22,6 +29,9 @@ public class UserManager implements UserManagerLocal {
     @PersistenceContext(unitName = "BaseProjectCorePU")
     EntityManager em;
 
+    @EJB
+    UserCardManagerLocal cardMan;
+    
     @Override
     public User getUserById(Long userId) {
         User user;
@@ -33,7 +43,8 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public User getUserByEmail(String email) {
+    public User getUserByEmail(String email) throws CardioException {
+        checkEmail(email);
         Query q = em.createQuery("select u from User u where u.email=:email").setParameter("email", email);
         try {
             return (User) q.getSingleResult();
@@ -43,11 +54,26 @@ public class UserManager implements UserManagerLocal {
         }
     }
 
-    @Override
-    public User registerNewUser(String email, String password, String firstName, String lastName, int group) {
-        if (!UserUtils.isValidEmail(email) || userExistsByEmail(email)) {
-            return null;
+    private void checkEmail(String email) throws CardioException{
+        if (!UserUtils.isValidEmail(email)){
+            throw new CardioException("email '"+email+"' is invalid");
         }
+    }
+    
+    private void checkUserExistence(String email) throws CardioException{
+//        checkEmail(email);
+        if (!userExistsByEmail(email)){
+            throw new CardioException("User with email '"+email+"' does not exist");
+        }
+    }
+    
+    @Override
+    public User registerNewUser(String email, String password, String firstName, String lastName, int group)  throws CardioException {
+        checkEmail(email);
+        if (userExistsByEmail(email)){
+            throw new CardioException("User with email '"+email+"' is already registered in the system");
+        }
+        
         User u = new User();
         u.setEmail(email);
         u.setPassword(password);
@@ -58,7 +84,7 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public User logInByEmail(String email, String password) {
+    public User logInByEmail(String email, String password) throws CardioException {
         User u = getUserByEmail(email);
         if (u.getPassword().equals(password)) {
             return u;
@@ -68,7 +94,7 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public boolean userExistsByEmail(String email) {
+    public boolean userExistsByEmail(String email) throws CardioException {
         return (getUserByEmail(email) == null) ? false : true;
     }
 
@@ -102,8 +128,9 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public boolean checkAuthorisationData(String email, String password) {
-        User u = getUserByEmail(email);
+    public boolean checkAuthorisationData(String email, String password) throws CardioException {
+        User u;
+        u = getUserByEmail(email);
         try {
             return u.getPassword().equals(password);
         } catch (Exception e) {
@@ -112,10 +139,10 @@ public class UserManager implements UserManagerLocal {
     }
 
     @Override
-    public boolean checkEmailAndLogin(String email, String password) throws Exception {
+    public boolean checkEmailAndPassword(String email, String password) throws CardioException {
         User u = getUserByEmail(email);
         if (u == null) {
-            throw new Exception("user with given email not found");
+            throw new CardioException("user with given email not found");
         }
         if (u.getPassword().equals(password)) {
             return true;
@@ -377,5 +404,36 @@ public class UserManager implements UserManagerLocal {
 
         return false;
 
+    }
+
+    @Override
+    public void updateInfo(SimpleUser su) throws CardioException {
+        if (!checkEmailAndPassword(su.getEmail(), su.getPassword())) throw new CardioException("incorrect pair email/password");
+        User u = getUserByEmail(su.getEmail());
+        
+        u.setFirstName(su.getFirstName());
+        u.setLastName(su.getLastName());
+        u.setDepartment(su.getDepartment());
+        u.setStatusMessage(su.getStatusMessage());
+        u = em.merge(u);
+    
+        
+        UserCard uc = cardMan.getCardByUserId(u.getId());
+        uc.setAboutMe(su.getAbout());
+        uc.setDescription(su.getDescription());
+        uc.setDiagnosis(su.getDiagnosis());
+        uc.setFirstName(su.getFirstName());
+        uc.setLastName(su.getLastName());
+
+        em.merge(uc);
+    }
+
+    @Override
+    public SimpleUser getSimpleInfo(String email, String password) throws CardioException {
+        if (!checkEmailAndPassword(email,password)) throw new CardioException("incorrect pair email/password");
+        User u = getUserByEmail(email);
+        UserCard uc = cardMan.getCardByUserId(u.getId());
+        SimpleUser su = new SimpleUser(email, password, u.getFirstName(), u.getLastName(), u.getDepartment(), uc.getAboutMe(), uc.getDiagnosis(), uc.getDescription(), u.getStatusMessage());
+        return su;
     }
 }

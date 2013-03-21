@@ -32,10 +32,10 @@
                     return;
                 }
                 plotINData();
-//                plotAMoPercentsData();
-//                plotPNN50PercentsData();
-//                plotBPData();
-//                plotRRNNData();
+                plotAMoPercentsData();
+                plotPNN50PercentsData();
+                plotBPData();
+                plotRRNNData();
 //                plotPData();
             })
 
@@ -65,11 +65,6 @@
                 $.plot("#placeholder_RRNN", [data] , options);
             }
             
-            function plotPData(){
-                json = JSON.parse('#{chartsBean.plotBaevskyJsonString("P")}');
-                data = eval(json.data);
-                $.plot("#placeholder_P", [data] , options);
-            }
             
             function plotPNN50PercentsData(){
                 json = JSON.parse('#{chartsBean.plotTISJsonString("PNN50")}');
@@ -115,7 +110,7 @@
                                 <li class="divider-vertical"></li>
                                 <li>
                                     <a href="#{request.contextPath}/faces/card.xhtml">
-                                        Карточка
+                                        Personal card
                                     </a>
                                 </li>
                                 <li class="divider-vertical"></li>

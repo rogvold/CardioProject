@@ -8,6 +8,7 @@
             <included-library dirs="200">file.reference.json-simple-1.1.1.jar</included-library>
             <included-library dirs="200">file.reference.flanagan.jar</included-library>
             <included-library dirs="200">file.reference.commons-lang3-3.1.jar</included-library>
+            <included-library dirs="200">file.reference.gson-2.2.2.jar</included-library>
             <source-roots>
                 <root id="src.dir" name="Source Packages"/>
             </source-roots>

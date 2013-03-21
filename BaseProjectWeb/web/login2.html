@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)http://wbpreview.com/previews/WB034RT1C/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>CardioMood | Landing Page</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="description" content="Woody Landing, landing page design"/>
+        <meta name="author" content="">
+        <!-- Styles -->
+        <link href="http://wbpreview.com/previews/WB034RT1C/css/bootstrap.css" rel="stylesheet"/>
+        <link href="http://wbpreview.com/previews/WB034RT1C/css/responsive.css" rel="stylesheet"/>
+        <link href="http://wbpreview.com/previews/WB034RT1C/css/woody-landing.css" rel="stylesheet"/>
+        <!-- Google Web Font-->
+        <link href="./landing/css" rel="stylesheet" type="text/css"/>
+        <link rel="shortcut icon" href="http://wbpreview.com/previews/WB034RT1C/img/favicon.ico"/>
+    </head>
+    <body>
+
+        <div class="container">
+            <div class="row">
+                <div id="box" class="span6 offset3">
+                    <h1><span class="bold">CardioMood</span> is coming soon</h1>
+                    <h2>To change your life for the better</h2>
+
+                    <h3>Keep yourself updated by subscribing to our newsletter</h3>
+
+                    <div id="signup">
+                        <div id="form" class="form-inline">
+                            <input data-bind="value: email" type="text" value="" name="email" class="input-xlarge email" id="email" placeholder="Your email address" data-original-title="">
+                            <!--                            <input type="submit" value="Subscribe" name="subscribe" class="btn btn-warning"><br/>-->
+                            <span class="btn btn-warning" data-bind="click: spanClicked" >Subscribe</span><br/>
+                            <small>* We won't spam you and you can unsubscribe at any point</small>
+                        </div>
+                    </div>
+                    <div id="responseBox" data-bind =" text: message , visible: visibleMessage" style="color: #F89507;
+                         text-shadow: 1px 1px 2px rgba(138, 119, 0, 0.6); font-size: 20px; font-weight: bold; margin-top: 20px;" ></div>
+                    <h5 style="margin-top: 30px;"><small><a href="BaseProjectWeb/faces/login.xhtml" style="color:#999;" >Login as a tester</a></small></h5>
+                </div>
+            </div>
+        </div><!--end container-->
+
+
+
+
+
+        <script type="text/javascript" src="./js/jquery.js"></script>
+        <script type="text/javascript" src="./js/knockout.js"></script>
+        <script type="text/javascript">
+            function vm() {
+                var self = this;
+                self.email = ko.observable();
+                self.message = ko.observable();
+                self.visibleMessage = ko.observable(false);
+                self.spanClicked = function(){
+                    $.ajax({
+                        type: 'GET'
+                        ,url: 'resources/subscribe/subscribe?email='+self.email()
+                        ,success: function(res){
+                            self.message((res.response == undefined) ? res.error : res.response);
+                            self.visibleMessage(true);
+                        }
+                    });
+                }
+            }
+            ko.applyBindings(new vm());
+        </script>
+       
+    
+    </body>
+</html>

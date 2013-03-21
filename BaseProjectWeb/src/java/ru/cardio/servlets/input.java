@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.parser.ParseException;
 import ru.cardio.core.managers.CardioSessionManagerLocal;
 import ru.cardio.entity.Data;
+import ru.cardio.exceptions.CardioException;
 import ru.cardio.utils.XmlUtils;
 
 /**
@@ -34,7 +35,7 @@ public class input extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ParseException, java.text.ParseException {
+            throws ServletException, IOException, ParseException, java.text.ParseException, CardioException {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         try {
@@ -66,7 +67,11 @@ public class input extends HttpServlet {
             throws ServletException, IOException {
         try {
             System.out.println("get parameterMap = " + request.getParameterMap());
-            processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (CardioException ex) {
+                Logger.getLogger(input.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } catch (ParseException ex) {
             Logger.getLogger(input.class.getName()).log(Level.SEVERE, null, ex);
         } catch (java.text.ParseException ex) {
@@ -88,7 +93,11 @@ public class input extends HttpServlet {
             throws ServletException, IOException {
         try {
             System.out.println("post parameterMap = " + request.getParameterMap());
-            processRequest(request, response);
+            try {
+                processRequest(request, response);
+            } catch (CardioException ex) {
+                Logger.getLogger(input.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } catch (ParseException ex) {
             Logger.getLogger(input.class.getName()).log(Level.SEVERE, null, ex);
         } catch (java.text.ParseException ex) {
