@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/web/webservices/RatesUploading.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/web/webservices/AuthResource.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/web/json/utils/CardioExceptionWrapper.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/web/index.xhtml</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/web/mySessions.xhtml</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/web/login2.html</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/src/java/ru/cardio/web/webservices/SubscribeResource.java</file>
+        <file>file:/home/rogvold/Documents/GitHub/Cardio/CardioProject/BaseProjectWeb/web/api_demo.xhtml</file>
+    </open-files>
 </project-private>
